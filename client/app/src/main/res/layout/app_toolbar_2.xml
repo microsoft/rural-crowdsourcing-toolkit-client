@@ -36,19 +36,35 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_perm_identity" />
 
+        <ImageView
+            android:id="@+id/karyaLogo"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginEnd="@dimen/_8sdp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/karya_logo"
+            android:clickable="true"
+            android:contentDescription="@string/yes"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="MissingConstraints" />
+
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:text="Karya"
             android:textColor="?attr/appLanguageTextColor"
-            android:textSize="@dimen/_20ssp"
-            android:text="Project Karya"
+            android:textSize="@dimen/_18ssp"
             android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/karyaLogo"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/profilePictureIv"
-            app:layout_constraintTop_toTopOf="parent"
-             />
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@id/karyaLogo"
+            app:layout_constraintTop_toTopOf="@id/karyaLogo" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/assistantCv"
