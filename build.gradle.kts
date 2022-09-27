@@ -33,6 +33,10 @@ plugins {
   id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
 }
 
+apply {
+    from(rootProject.file("install-git-hooks.gradle"))
+}
+
 allprojects {
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
@@ -64,3 +68,10 @@ tasks {
         delete(rootProject.buildDir)
     }
 }
+
+/**
+ * registers installGitHooks task to run before build, this
+ * way whenever a new clone is made, the first build copies
+ * pre-commit script to .git/hooks
+ */
+tasks.getByPath(":app:preBuild").dependsOn(":installGitHook")

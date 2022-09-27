@@ -1,0 +1,6 @@
+// TODO: Move this task to build.gradle.kts
+task installGitHook(type: Copy) {
+    from new File(rootProject.rootDir, 'tools/pre-commit')
+    into { new File(rootProject.rootDir, '.git/hooks') }
+    fileMode 0777
+}
