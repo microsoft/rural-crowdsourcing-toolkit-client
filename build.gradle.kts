@@ -29,7 +29,18 @@ buildscript {
     }
 }
 
+plugins {
+  id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+}
+
 allprojects {
+
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    ktlint {
+      // By default ktlint disables wildcard imports, to allow it we need to disable this
+      disabledRules.set(listOf("no-wildcard-imports"))
+    }
+
     repositories {
         google()
         mavenCentral()

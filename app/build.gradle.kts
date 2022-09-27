@@ -7,7 +7,6 @@ plugins {
   id("com.google.firebase.crashlytics")
   id("dagger.hilt.android.plugin")
   id("androidx.navigation.safeargs.kotlin")
-  id("com.ncorti.ktfmt.gradle") version "0.7.0"
   id("com.github.ben-manes.versions") version "0.38.0"
 }
 
@@ -88,18 +87,6 @@ android {
       buildConfigField("boolean", "PAYMENTS_ENABLED", "true")
     }
   }
-}
-
-ktfmt {
-  googleStyle()
-
-  maxWidth.set(120)
-  removeUnusedImports.set(true)
-}
-
-tasks.register<com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask>("ktfmtPrecommit") {
-  source = project.fileTree(rootDir)
-  include("**/*.kt")
 }
 
 dependencyLocking {
