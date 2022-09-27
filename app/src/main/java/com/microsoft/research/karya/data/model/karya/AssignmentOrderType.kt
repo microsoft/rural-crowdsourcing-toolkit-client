@@ -5,7 +5,7 @@
 package com.microsoft.research.karya.data.model.karya
 
 enum class AssignmentOrderType {
-  SEQUENTIAL,
-  RANDOM,
-  EITHER
+    SEQUENTIAL,
+    RANDOM,
+    EITHER
 }

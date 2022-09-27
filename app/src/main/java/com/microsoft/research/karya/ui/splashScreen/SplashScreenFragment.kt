@@ -20,62 +20,62 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SplashScreenFragment : Fragment(R.layout.fragment_splash_screen) {
 
-  private val viewModel by viewModels<SplashViewModel>()
-  private lateinit var navController: NavController
+    private val viewModel by viewModels<SplashViewModel>()
+    private lateinit var navController: NavController
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    navController = findNavController()
-    handleNavigation()
-    observeEffects()
+        navController = findNavController()
+        handleNavigation()
+        observeEffects()
 
-    viewModel.navigate()
-  }
+        viewModel.navigate()
+    }
 
-  private fun handleNavigation() {
-    viewModel.splashDestination.observe(viewLifecycle, viewLifecycleScope) { destination ->
-      when (destination) {
-        Destination.AccessCodeFlow -> navigateToAccessCodeFlow()
-        Destination.UserSelection -> navigateToUserSelection()
-        Destination.LoginFlow -> navigateToLoginFlow()
-        Destination.HomeScreen -> navigateToHomeScreen()
-        Destination.ProfileFragment -> navigateToProfileFragment()
-        Destination.Splash -> {
+    private fun handleNavigation() {
+        viewModel.splashDestination.observe(viewLifecycle, viewLifecycleScope) { destination ->
+            when (destination) {
+                Destination.AccessCodeFlow -> navigateToAccessCodeFlow()
+                Destination.UserSelection -> navigateToUserSelection()
+                Destination.LoginFlow -> navigateToLoginFlow()
+                Destination.HomeScreen -> navigateToHomeScreen()
+                Destination.ProfileFragment -> navigateToProfileFragment()
+                Destination.Splash -> {
+                }
+            }
         }
-      }
     }
-  }
 
-  private fun observeEffects() {
-    viewModel.splashEffects.observe(viewLifecycle, viewLifecycleScope) { effect ->
-      when (effect) {
-        is SplashEffects.UpdateLanguage -> updateActivityLanguage(effect.language)
-      }
+    private fun observeEffects() {
+        viewModel.splashEffects.observe(viewLifecycle, viewLifecycleScope) { effect ->
+            when (effect) {
+                is SplashEffects.UpdateLanguage -> updateActivityLanguage(effect.language)
+            }
+        }
     }
-  }
 
-  private fun updateActivityLanguage(language: String) {
-    (requireActivity() as MainActivity).setActivityLocale(language)
-  }
+    private fun updateActivityLanguage(language: String) {
+        (requireActivity() as MainActivity).setActivityLocale(language)
+    }
 
-  private fun navigateToUserSelection() {
-    // navController.navigate(R.id.action_splashScreenFragment_to_userSelectionFlow)
-  }
+    private fun navigateToUserSelection() {
+        // navController.navigate(R.id.action_splashScreenFragment_to_userSelectionFlow)
+    }
 
-  private fun navigateToAccessCodeFlow() {
-    navController.navigate(R.id.action_splashScreenFragment_to_accessCodeFragment)
-  }
+    private fun navigateToAccessCodeFlow() {
+        navController.navigate(R.id.action_splashScreenFragment_to_accessCodeFragment)
+    }
 
-  private fun navigateToHomeScreen() {
-    navController.navigate(R.id.action_splashScreen_to_homeScreen)
-  }
+    private fun navigateToHomeScreen() {
+        navController.navigate(R.id.action_splashScreen_to_homeScreen)
+    }
 
-  private fun navigateToLoginFlow() {
-    navController.navigate(R.id.action_splashScreenFragment_to_loginFlow)
-  }
+    private fun navigateToLoginFlow() {
+        navController.navigate(R.id.action_splashScreenFragment_to_loginFlow)
+    }
 
-  private fun navigateToProfileFragment() {
-    navController.navigate(R.id.action_splashScreenFragment_to_profileFragment)
-  }
+    private fun navigateToProfileFragment() {
+        navController.navigate(R.id.action_splashScreenFragment_to_profileFragment)
+    }
 }

@@ -8,18 +8,18 @@ import retrofit2.http.*
 
 interface KaryaFileAPI {
 
-  @Multipart
-  @PUT("/karya_files")
-  suspend fun uploadKaryaFile(
-    @Header("karya-id-token") idToken: String,
-    @Part json: MultipartBody.Part,
-    @Part file: MultipartBody.Part,
-  ): Response<KaryaFileRecord>
+    @Multipart
+    @PUT("/karya_files")
+    suspend fun uploadKaryaFile(
+        @Header("karya-id-token") idToken: String,
+        @Part json: MultipartBody.Part,
+        @Part file: MultipartBody.Part,
+    ): Response<KaryaFileRecord>
 
-  @GET("/karya_files/{id}")
-  suspend fun getKaryaFile(
-    @Header("access-code") accessCode: String,
-    @Header("karya-id-token") idToken: String,
-    @Path("id") karyaFileId: String,
-  ): Response<ResponseBody>
+    @GET("/karya_files/{id}")
+    suspend fun getKaryaFile(
+        @Header("access-code") accessCode: String,
+        @Header("karya-id-token") idToken: String,
+        @Path("id") karyaFileId: String,
+    ): Response<ResponseBody>
 }

@@ -10,27 +10,26 @@ import androidx.navigation.fragment.findNavController
 import com.microsoft.research.karya.R
 import com.microsoft.research.karya.databinding.FragmentAccessCodeBinding
 import com.microsoft.research.karya.ui.MainActivity
-import com.microsoft.research.karya.utils.SeparatorTextWatcher
 import com.microsoft.research.karya.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AccessCodeFragment : Fragment(R.layout.fragment_access_code) {
-  private val binding by viewBinding(FragmentAccessCodeBinding::bind)
-  private val viewModel by viewModels<AccessCodeViewModel>()
+    private val binding by viewBinding(FragmentAccessCodeBinding::bind)
+    private val viewModel by viewModels<AccessCodeViewModel>()
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    setupViews()
-    observeUi()
-    observeEffects()
-  }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupViews()
+        observeUi()
+        observeEffects()
+    }
 
-  private fun setupViews() {
-    with(binding) {
-      // TODO: Temporarily removing separator text watcher
-      // Need to fix it to work with num pad
+    private fun setupViews() {
+        with(binding) {
+            // TODO: Temporarily removing separator text watcher
+            // Need to fix it to work with num pad
 //      accessCodeEt.addTextChangedListener(
 //        object : SeparatorTextWatcher('-', 4) {
 //          override fun onAfterTextChanged(text: String, position: Int) {
@@ -42,104 +41,104 @@ class AccessCodeFragment : Fragment(R.layout.fragment_access_code) {
 //        }
 //      )
 
-      accessCodeEt.doAfterTextChanged {
-        if (accessCodeEt.length() > 0) {
-          numPad.enableDoneButton()
-        } else {
-          numPad.disableDoneButton()
+            accessCodeEt.doAfterTextChanged {
+                if (accessCodeEt.length() > 0) {
+                    numPad.enableDoneButton()
+                } else {
+                    numPad.disableDoneButton()
+                }
+
+                hideError()
+            }
+
+            numPad.setOnDoneListener { handleSubmit() }
+            numPad.disableDoneButton()
         }
+    }
 
+    private fun handleSubmit() {
+        val accessCode = binding.accessCodeEt.text.toString().replace("-", "")
+        val decodedURL = AccessCodeDecoder.decodeURL(requireContext(), accessCode)
+        // Set the decoded URL for the app to be used
+        lifecycleScope.launch {
+            viewModel.setURL(decodedURL)
+            viewModel.checkAccessCode(accessCode)
+        }
+    }
+
+    private fun observeUi() {
+        viewModel.accessCodeUiState.observe(viewLifecycle, viewLifecycleScope) { state ->
+            when (state) {
+                is AccessCodeUiState.Success -> showSuccessUi(state.languageCode)
+                is AccessCodeUiState.Error -> showErrorUi()
+                AccessCodeUiState.Initial -> showInitialUi()
+                AccessCodeUiState.Loading -> showLoadingUi()
+            }
+        }
+    }
+
+    private fun observeEffects() {
+        viewModel.accessCodeEffects.observe(viewLifecycle, viewLifecycleScope) { effect ->
+            when (effect) {
+                AccessCodeEffects.Navigate -> navigateToConsentFormFragment()
+            }
+        }
+    }
+
+    private fun navigateToConsentFormFragment() {
+        findNavController().navigate(R.id.action_accessCodeFragment_to_fileDownloadFragment)
+    }
+
+    private fun showSuccessUi(languageCode: String) {
+        updateActivityLanguage(languageCode)
+        hideLoading()
         hideError()
-      }
-
-      numPad.setOnDoneListener { handleSubmit() }
-      numPad.disableDoneButton()
+        enableDoneButton()
     }
-  }
 
-  private fun handleSubmit() {
-    val accessCode = binding.accessCodeEt.text.toString().replace("-", "")
-    val decodedURL = AccessCodeDecoder.decodeURL(requireContext(), accessCode)
-    // Set the decoded URL for the app to be used
-    lifecycleScope.launch {
-      viewModel.setURL(decodedURL)
-      viewModel.checkAccessCode(accessCode)
+    private fun showErrorUi() {
+        showError()
+        hideLoading()
+        enableDoneButton()
     }
-  }
 
-  private fun observeUi() {
-    viewModel.accessCodeUiState.observe(viewLifecycle, viewLifecycleScope) { state ->
-      when (state) {
-        is AccessCodeUiState.Success -> showSuccessUi(state.languageCode)
-        is AccessCodeUiState.Error -> showErrorUi()
-        AccessCodeUiState.Initial -> showInitialUi()
-        AccessCodeUiState.Loading -> showLoadingUi()
-      }
+    private fun showInitialUi() {
+        hideLoading()
+        disableDoneButton()
+        hideError()
+        binding.accessCodeEt.text.clear()
     }
-  }
 
-  private fun observeEffects() {
-    viewModel.accessCodeEffects.observe(viewLifecycle, viewLifecycleScope) { effect ->
-      when (effect) {
-        AccessCodeEffects.Navigate -> navigateToConsentFormFragment()
-      }
+    private fun showLoadingUi() {
+        showLoading()
+        disableDoneButton()
     }
-  }
 
-  private fun navigateToConsentFormFragment() {
-    findNavController().navigate(R.id.action_accessCodeFragment_to_fileDownloadFragment)
-  }
+    private fun showError() {
+        binding.accessCodeErrorIv.visible()
+    }
 
-  private fun showSuccessUi(languageCode: String) {
-    updateActivityLanguage(languageCode)
-    hideLoading()
-    hideError()
-    enableDoneButton()
-  }
+    private fun hideError() {
+        binding.accessCodeErrorIv.invisible()
+    }
 
-  private fun showErrorUi() {
-    showError()
-    hideLoading()
-    enableDoneButton()
-  }
+    private fun showLoading() {
+        binding.loadingPb.visible()
+    }
 
-  private fun showInitialUi() {
-    hideLoading()
-    disableDoneButton()
-    hideError()
-    binding.accessCodeEt.text.clear()
-  }
+    private fun hideLoading() {
+        binding.loadingPb.gone()
+    }
 
-  private fun showLoadingUi() {
-    showLoading()
-    disableDoneButton()
-  }
+    private fun disableDoneButton() {
+        binding.numPad.disableDoneButton()
+    }
 
-  private fun showError() {
-    binding.accessCodeErrorIv.visible()
-  }
+    private fun enableDoneButton() {
+        binding.numPad.enableDoneButton()
+    }
 
-  private fun hideError() {
-    binding.accessCodeErrorIv.invisible()
-  }
-
-  private fun showLoading() {
-    binding.loadingPb.visible()
-  }
-
-  private fun hideLoading() {
-    binding.loadingPb.gone()
-  }
-
-  private fun disableDoneButton() {
-    binding.numPad.disableDoneButton()
-  }
-
-  private fun enableDoneButton() {
-    binding.numPad.enableDoneButton()
-  }
-
-  private fun updateActivityLanguage(language: String) {
-    (requireActivity() as MainActivity).setActivityLocale(language)
-  }
+    private fun updateActivityLanguage(language: String) {
+        (requireActivity() as MainActivity).setActivityLocale(language)
+    }
 }

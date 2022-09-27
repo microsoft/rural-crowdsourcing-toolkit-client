@@ -5,6 +5,6 @@
 package com.microsoft.research.karya.data.model.karya.enums
 
 enum class PayoutInfoStatus {
-  submitted,
-  verified
+    submitted,
+    verified
 }

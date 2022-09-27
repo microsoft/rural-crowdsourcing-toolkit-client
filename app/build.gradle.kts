@@ -1,184 +1,183 @@
 plugins {
-  id("com.android.application")
-  id("kotlin-android")
-  id("kotlin-android-extensions")
-  id("kotlin-kapt")
-  id("com.google.gms.google-services")
-  id("com.google.firebase.crashlytics")
-  id("dagger.hilt.android.plugin")
-  id("androidx.navigation.safeargs.kotlin")
-  id("com.github.ben-manes.versions") version "0.38.0"
+    id("com.android.application")
+    id("kotlin-android")
+    id("kotlin-android-extensions")
+    id("kotlin-kapt")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
+    id("dagger.hilt.android.plugin")
+    id("androidx.navigation.safeargs.kotlin")
+    id("com.github.ben-manes.versions") version "0.38.0"
 }
 
 android {
-  compileSdkVersion(31)
-  defaultConfig {
-    applicationId = "com.microsoft.research.karya"
-    minSdkVersion(24)
-    targetSdkVersion(30)
-    multiDexEnabled = true
-    versionCode = 25
-    versionName = "1"
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    vectorDrawables.useSupportLibrary = true
-    // Build config field to enable or disable payments
-    buildConfigField("boolean", "PAYMENTS_ENABLED", "false")
-  }
-  buildTypes {
-    named("release") {
-      isMinifyEnabled = false
-      setProguardFiles(
-        listOf(
-          getDefaultProguardFile("proguard-android-optimize.txt"),
-          "proguard-rules.pro"
-        )
-      )
+    compileSdkVersion(31)
+    defaultConfig {
+        applicationId = "com.microsoft.research.karya"
+        minSdkVersion(24)
+        targetSdkVersion(30)
+        multiDexEnabled = true
+        versionCode = 25
+        versionName = "1"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+        // Build config field to enable or disable payments
+        buildConfigField("boolean", "PAYMENTS_ENABLED", "false")
     }
-  }
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-  }
-  kotlinOptions {
-    jvmTarget = "1.8"
-    kapt {
-      arguments {
-        arg("room.schemaLocation", "$projectDir/schemas")
-      }
+    buildTypes {
+        named("release") {
+            isMinifyEnabled = false
+            setProguardFiles(
+                listOf(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+                )
+            )
+        }
     }
-  }
-  lintOptions {
-    isAbortOnError = false
-  }
-  androidExtensions {
-    isExperimental = true
-  }
-  buildFeatures {
-    dataBinding = true
-    viewBinding = true
-  }
-  packagingOptions {
-    exclude("META-INF/DEPENDENCIES")
-    exclude("META-INF/LICENSE")
-    exclude("META-INF/LICENSE.txt")
-    exclude("META-INF/license.txt")
-    exclude("META-INF/NOTICE")
-    exclude("META-INF/NOTICE.txt")
-    exclude("META-INF/notice.txt")
-    exclude("META-INF/ASL2.0")
-    exclude("META-INF/*.kotlin_module")
-  }
-  flavorDimensions("study")
-  productFlavors {
-    create ("mit") {
-      dimension = "study"
-      applicationIdSuffix = ".mit2022"
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
-    create ("rani") {
-      dimension = "study"
-      applicationIdSuffix = ".rani"
+    kotlinOptions {
+        jvmTarget = "1.8"
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
-    create("large") {
-      dimension = "study"
-      applicationIdSuffix = ".large"
+    lintOptions {
+        isAbortOnError = false
     }
-    create("standard") {
-      dimension = "study"
-      buildConfigField("boolean", "PAYMENTS_ENABLED", "true")
+    androidExtensions {
+        isExperimental = true
     }
-  }
+    buildFeatures {
+        dataBinding = true
+        viewBinding = true
+    }
+    packagingOptions {
+        exclude("META-INF/DEPENDENCIES")
+        exclude("META-INF/LICENSE")
+        exclude("META-INF/LICENSE.txt")
+        exclude("META-INF/license.txt")
+        exclude("META-INF/NOTICE")
+        exclude("META-INF/NOTICE.txt")
+        exclude("META-INF/notice.txt")
+        exclude("META-INF/ASL2.0")
+        exclude("META-INF/*.kotlin_module")
+    }
+    flavorDimensions("study")
+    productFlavors {
+        create("mit") {
+            dimension = "study"
+            applicationIdSuffix = ".mit2022"
+        }
+        create("rani") {
+            dimension = "study"
+            applicationIdSuffix = ".rani"
+        }
+        create("large") {
+            dimension = "study"
+            applicationIdSuffix = ".large"
+        }
+        create("standard") {
+            dimension = "study"
+            buildConfigField("boolean", "PAYMENTS_ENABLED", "true")
+        }
+    }
 }
 
 dependencyLocking {
-  lockAllConfigurations()
+    lockAllConfigurations()
 }
 
 dependencies {
 
-  implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
-  implementation(Dependencies.AndroidX.appcompat)
-  implementation(Dependencies.AndroidX.constraintLayout)
-  implementation(Dependencies.AndroidX.datastorePrefs)
-  implementation(Dependencies.AndroidX.fragmentKtx)
-  implementation(Dependencies.AndroidX.legacy_support)
-  implementation(Dependencies.AndroidX.multidex)
-  implementation(Dependencies.AndroidX.work_runtime)
-  implementation(Dependencies.AndroidX.work_multiprocess)
+    implementation(Dependencies.AndroidX.appcompat)
+    implementation(Dependencies.AndroidX.constraintLayout)
+    implementation(Dependencies.AndroidX.datastorePrefs)
+    implementation(Dependencies.AndroidX.fragmentKtx)
+    implementation(Dependencies.AndroidX.legacy_support)
+    implementation(Dependencies.AndroidX.multidex)
+    implementation(Dependencies.AndroidX.work_runtime)
+    implementation(Dependencies.AndroidX.work_multiprocess)
 
-  implementation(Dependencies.AndroidX.Lifecycle.common)
-  implementation(Dependencies.AndroidX.Lifecycle.extensions)
-  implementation(Dependencies.AndroidX.Lifecycle.livedataKtx)
-  implementation(Dependencies.AndroidX.Lifecycle.runtimeKtx)
-  implementation(Dependencies.AndroidX.Lifecycle.saved_state)
-  implementation(Dependencies.AndroidX.Lifecycle.viewModelKtx)
+    implementation(Dependencies.AndroidX.Lifecycle.common)
+    implementation(Dependencies.AndroidX.Lifecycle.extensions)
+    implementation(Dependencies.AndroidX.Lifecycle.livedataKtx)
+    implementation(Dependencies.AndroidX.Lifecycle.runtimeKtx)
+    implementation(Dependencies.AndroidX.Lifecycle.saved_state)
+    implementation(Dependencies.AndroidX.Lifecycle.viewModelKtx)
 
-  implementation(Dependencies.AndroidX.Navigation.fragmentKtx)
-  implementation(Dependencies.AndroidX.Navigation.uiKtx)
+    implementation(Dependencies.AndroidX.Navigation.fragmentKtx)
+    implementation(Dependencies.AndroidX.Navigation.uiKtx)
 
-  implementation(Dependencies.AndroidX.Room.roomKtx)
-  implementation(Dependencies.AndroidX.Room.roomRuntime)
+    implementation(Dependencies.AndroidX.Room.roomKtx)
+    implementation(Dependencies.AndroidX.Room.roomRuntime)
 
-  implementation(Dependencies.AndroidX.Navigation.fragmentKtx)
-  implementation(Dependencies.AndroidX.Navigation.uiKtx)
+    implementation(Dependencies.AndroidX.Navigation.fragmentKtx)
+    implementation(Dependencies.AndroidX.Navigation.uiKtx)
 
-  kapt(Dependencies.AndroidX.Room.roomCompiler)
+    kapt(Dependencies.AndroidX.Room.roomCompiler)
 
-  implementation(Dependencies.Google.gson)
-  implementation(Dependencies.Google.material)
+    implementation(Dependencies.Google.gson)
+    implementation(Dependencies.Google.material)
 
-  implementation(platform(Dependencies.Google.Firebase.bom))
-  implementation(Dependencies.Google.Firebase.crashlytics)
-  implementation(Dependencies.Google.Firebase.analytics)
+    implementation(platform(Dependencies.Google.Firebase.bom))
+    implementation(Dependencies.Google.Firebase.crashlytics)
+    implementation(Dependencies.Google.Firebase.analytics)
 
-  implementation(Dependencies.AndroidX.Hilt.dagger)
-  implementation(Dependencies.AndroidX.Hilt.hiltNavigationFragment)
+    implementation(Dependencies.AndroidX.Hilt.dagger)
+    implementation(Dependencies.AndroidX.Hilt.hiltNavigationFragment)
 
-  kapt(Dependencies.AndroidX.Hilt.daggerCompiler)
-  kapt(Dependencies.AndroidX.Hilt.daggerHiltCompiler)
+    kapt(Dependencies.AndroidX.Hilt.daggerCompiler)
+    kapt(Dependencies.AndroidX.Hilt.daggerHiltCompiler)
 
-  implementation(Dependencies.Kotlin.Coroutines.core)
-  implementation(Dependencies.Kotlin.Coroutines.coroutines)
+    implementation(Dependencies.Kotlin.Coroutines.core)
+    implementation(Dependencies.Kotlin.Coroutines.coroutines)
 
-  implementation(Dependencies.ThirdParty.circleImageView)
-  implementation(Dependencies.ThirdParty.glide)
-  implementation(Dependencies.ThirdParty.okhttp)
-  implementation(Dependencies.ThirdParty.loggingInterceptor)
-  implementation(Dependencies.ThirdParty.stateProgressBar)
+    implementation(Dependencies.ThirdParty.circleImageView)
+    implementation(Dependencies.ThirdParty.glide)
+    implementation(Dependencies.ThirdParty.okhttp)
+    implementation(Dependencies.ThirdParty.loggingInterceptor)
+    implementation(Dependencies.ThirdParty.stateProgressBar)
 
-  implementation(Dependencies.ThirdParty.Retrofit.retrofit)
-  implementation(Dependencies.ThirdParty.Retrofit.gsonConverter)
+    implementation(Dependencies.ThirdParty.Retrofit.retrofit)
+    implementation(Dependencies.ThirdParty.Retrofit.gsonConverter)
 
-  debugImplementation(Dependencies.ThirdParty.debugDB)
+    debugImplementation(Dependencies.ThirdParty.debugDB)
 
-  implementation("com.mcxiaoke.volley:library:1.0.19")
-  implementation("com.nex3z:flow-layout:1.3.4-beta01")
+    implementation("com.mcxiaoke.volley:library:1.0.19")
+    implementation("com.nex3z:flow-layout:1.3.4-beta01")
 
-  // Scaled dp and sp implemenations
-  implementation("com.intuit.ssp:ssp-android:1.0.6")
-  implementation("com.intuit.sdp:sdp-android:1.0.6")
+    // Scaled dp and sp implemenations
+    implementation("com.intuit.ssp:ssp-android:1.0.6")
+    implementation("com.intuit.sdp:sdp-android:1.0.6")
 
-  // Themed button toggle group
-  implementation("nl.bryanderidder:themed-toggle-button-group:1.3.4")
+    // Themed button toggle group
+    implementation("nl.bryanderidder:themed-toggle-button-group:1.3.4")
 
-  // Camera view
-  implementation("com.otaliastudios:cameraview:2.7.2")
+    // Camera view
+    implementation("com.otaliastudios:cameraview:2.7.2")
 
-  // Android rating bar
-  implementation("me.zhanghai.android.materialratingbar:library:1.3.1")
-  // Custom aars
-  implementation(files("libs/zoomage-debug.aar"))
+    // Android rating bar
+    implementation("me.zhanghai.android.materialratingbar:library:1.3.1")
+    // Custom aars
+    implementation(files("libs/zoomage-debug.aar"))
 
-  // Grid layout for lower API levels
-  implementation ("androidx.gridlayout:gridlayout:1.0.0")
+    // Grid layout for lower API levels
+    implementation("androidx.gridlayout:gridlayout:1.0.0")
 
-  // Splotlight
-  implementation("com.github.takusemba:spotlight:2.0.5")
+    // Splotlight
+    implementation("com.github.takusemba:spotlight:2.0.5")
 
-  // Video data collection
-  implementation ("com.github.HamidrezaAmz:MagicalExoPlayer:2.0.6")
-  "largeImplementation" ("com.google.android.gms:play-services-mlkit-face-detection:16.2.0")
-  "largeImplementation" ("com.google.mlkit:face-detection:16.1.2")
-  "largeImplementation" ("com.github.fishwjy:VideoCompressor:master-SNAPSHOT")
-
+    // Video data collection
+    implementation("com.github.HamidrezaAmz:MagicalExoPlayer:2.0.6")
+    "largeImplementation" ("com.google.android.gms:play-services-mlkit-face-detection:16.2.0")
+    "largeImplementation" ("com.google.mlkit:face-detection:16.1.2")
+    "largeImplementation" ("com.github.fishwjy:VideoCompressor:master-SNAPSHOT")
 }

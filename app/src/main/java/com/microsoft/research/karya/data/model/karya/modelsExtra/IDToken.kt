@@ -4,8 +4,8 @@
 package com.microsoft.research.karya.data.model.karya.modelsExtra
 
 data class IDToken(
-  val sub: String,
-  val iat: Int,
-  val exp: Int,
-  val aud: String,
+    val sub: String,
+    val iat: Int,
+    val exp: Int,
+    val aud: String,
 )

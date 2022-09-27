@@ -20,107 +20,107 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ConsentFormFragment : BaseFragment(R.layout.fragment_consent_form) {
 
-  private val binding by viewBinding(FragmentConsentFormBinding::bind)
-  private val viewModel by viewModels<ConsentFormViewModel>()
+    private val binding by viewBinding(FragmentConsentFormBinding::bind)
+    private val viewModel by viewModels<ConsentFormViewModel>()
 
-  @Inject lateinit var resourceManager: ResourceManager
+    @Inject lateinit var resourceManager: ResourceManager
 
-  @Inject lateinit var authManager: AuthManager
+    @Inject lateinit var authManager: AuthManager
 
-  // TODO: add assistant
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    setupViews()
-    observeUi()
-    observeEffects()
-  }
-
-  override fun onResume() {
-    super.onResume()
-    assistant.playAssistantAudio(AssistantAudio.CONSENT_FORM_SUMMARY)
-  }
-
-  private fun setupViews() {
-    val consentFormText = getString(R.string.consent_form_text)
-
-    val spannedText =
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        Html.fromHtml(consentFormText, Html.FROM_HTML_MODE_COMPACT)
-      } else {
-        Html.fromHtml(consentFormText)
-      }
-
-    with(binding) {
-      appTb.setAssistantClickListener { assistant.playAssistantAudio(AssistantAudio.CONSENT_FORM_SUMMARY) }
-
-      consentFormTv.text = spannedText
-      consentFormTv.movementMethod = ScrollingMovementMethod()
-
-      agreeBtn.setOnClickListener { viewModel.updateConsentFormStatus(true) }
-      disagreeBtn.setOnClickListener { requireActivity().finish() }
+    // TODO: add assistant
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupViews()
+        observeUi()
+        observeEffects()
     }
-  }
 
-  private fun observeUi() {
-    viewModel.consentFormUiState.observe(viewLifecycle, viewLifecycleScope) { state ->
-      when (state) {
-        is ConsentFormUiState.Error -> showErrorUi()
-        ConsentFormUiState.Initial -> showInitialUi()
-        ConsentFormUiState.Loading -> showLoadingUi()
-        ConsentFormUiState.Success -> showSuccessUi()
-      }
+    override fun onResume() {
+        super.onResume()
+        assistant.playAssistantAudio(AssistantAudio.CONSENT_FORM_SUMMARY)
     }
-  }
 
-  private fun observeEffects() {
-    viewModel.consentFormEffects.observe(viewLifecycle, viewLifecycleScope) { effect ->
-      when (effect) {
-        ConsentFormEffects.Navigate -> navigateToLoginFlow()
-      }
+    private fun setupViews() {
+        val consentFormText = getString(R.string.consent_form_text)
+
+        val spannedText =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(consentFormText, Html.FROM_HTML_MODE_COMPACT)
+            } else {
+                Html.fromHtml(consentFormText)
+            }
+
+        with(binding) {
+            appTb.setAssistantClickListener { assistant.playAssistantAudio(AssistantAudio.CONSENT_FORM_SUMMARY) }
+
+            consentFormTv.text = spannedText
+            consentFormTv.movementMethod = ScrollingMovementMethod()
+
+            agreeBtn.setOnClickListener { viewModel.updateConsentFormStatus(true) }
+            disagreeBtn.setOnClickListener { requireActivity().finish() }
+        }
     }
-  }
 
-  private fun showInitialUi() {
-    with(binding) {
-      agreeBtn.isClickable = true
-      disagreeBtn.isClickable = true
-
-      agreeBtn.enable()
-      disagreeBtn.enable()
+    private fun observeUi() {
+        viewModel.consentFormUiState.observe(viewLifecycle, viewLifecycleScope) { state ->
+            when (state) {
+                is ConsentFormUiState.Error -> showErrorUi()
+                ConsentFormUiState.Initial -> showInitialUi()
+                ConsentFormUiState.Loading -> showLoadingUi()
+                ConsentFormUiState.Success -> showSuccessUi()
+            }
+        }
     }
-  }
 
-  private fun showLoadingUi() {
-    with(binding) {
-      agreeBtn.isClickable = false
-      disagreeBtn.isClickable = false
-
-      agreeBtn.disable()
-      disagreeBtn.disable()
+    private fun observeEffects() {
+        viewModel.consentFormEffects.observe(viewLifecycle, viewLifecycleScope) { effect ->
+            when (effect) {
+                ConsentFormEffects.Navigate -> navigateToLoginFlow()
+            }
+        }
     }
-  }
 
-  private fun showSuccessUi() {
-    with(binding) {
-      agreeBtn.isClickable = true
-      disagreeBtn.isClickable = true
+    private fun showInitialUi() {
+        with(binding) {
+            agreeBtn.isClickable = true
+            disagreeBtn.isClickable = true
 
-      agreeBtn.enable()
-      disagreeBtn.enable()
+            agreeBtn.enable()
+            disagreeBtn.enable()
+        }
     }
-  }
 
-  private fun showErrorUi() {
-    with(binding) {
-      agreeBtn.isClickable = true
-      disagreeBtn.isClickable = true
+    private fun showLoadingUi() {
+        with(binding) {
+            agreeBtn.isClickable = false
+            disagreeBtn.isClickable = false
 
-      agreeBtn.enable()
-      disagreeBtn.enable()
+            agreeBtn.disable()
+            disagreeBtn.disable()
+        }
     }
-  }
 
-  private fun navigateToLoginFlow() {
-    findNavController().navigate(R.id.action_consentFormFragment_to_loginFlow)
-  }
+    private fun showSuccessUi() {
+        with(binding) {
+            agreeBtn.isClickable = true
+            disagreeBtn.isClickable = true
+
+            agreeBtn.enable()
+            disagreeBtn.enable()
+        }
+    }
+
+    private fun showErrorUi() {
+        with(binding) {
+            agreeBtn.isClickable = true
+            disagreeBtn.isClickable = true
+
+            agreeBtn.enable()
+            disagreeBtn.enable()
+        }
+    }
+
+    private fun navigateToLoginFlow() {
+        findNavController().navigate(R.id.action_consentFormFragment_to_loginFlow)
+    }
 }

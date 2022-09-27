@@ -21,64 +21,64 @@ import kotlinx.coroutines.flow.onEach
 @AndroidEntryPoint
 class PaymentDetailUPIFragment : Fragment(R.layout.fragment_payment_details_upi) {
 
-  private val binding by viewBinding(FragmentPaymentDetailsUpiBinding::bind)
-  private val viewModel by viewModels<PaymentDetailUPIViewModel>()
+    private val binding by viewBinding(FragmentPaymentDetailsUpiBinding::bind)
+    private val viewModel by viewModels<PaymentDetailUPIViewModel>()
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    setupListeners()
-  }
-
-  private fun setupListeners() {
-    binding.submitButton.setOnClickListener {
-      with(binding) {
-        hideKeyboard()
-        viewModel.submitUPIDetails(nameEt.text.toString(), upiIdEt.text.toString(), upiIdRepeatEt.text.toString())
-      }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupListeners()
     }
 
-    viewModel.uiStateFlow.observe(lifecycle, viewLifecycleScope) { paymentModel -> render(paymentModel) }
-
-    viewModel
-      .navigationFlow
-      .onEach { paymentDetailNavigation ->
-        when (paymentDetailNavigation) {
-          PaymentDetailNavigation.VERIFICATION -> navigateToVerification()
-          PaymentDetailNavigation.FAILURE -> navigateToFailure()
+    private fun setupListeners() {
+        binding.submitButton.setOnClickListener {
+            with(binding) {
+                hideKeyboard()
+                viewModel.submitUPIDetails(nameEt.text.toString(), upiIdEt.text.toString(), upiIdRepeatEt.text.toString())
+            }
         }
-      }
-      .launchIn(viewLifecycleScope)
-  }
 
-  private fun render(paymentDetailUPIModel: PaymentDetailUPIModel) {
-    if (paymentDetailUPIModel.isLoading) {
-      with(binding) {
-        progressBar.visible()
-        submitButton.gone()
-        errorTv.gone()
-        errorTv.text = ""
-      }
+        viewModel.uiStateFlow.observe(lifecycle, viewLifecycleScope) { paymentModel -> render(paymentModel) }
+
+        viewModel
+            .navigationFlow
+            .onEach { paymentDetailNavigation ->
+                when (paymentDetailNavigation) {
+                    PaymentDetailNavigation.VERIFICATION -> navigateToVerification()
+                    PaymentDetailNavigation.FAILURE -> navigateToFailure()
+                }
+            }
+            .launchIn(viewLifecycleScope)
     }
 
-    if (paymentDetailUPIModel.errorMessage.isNotEmpty()) {
-      with(binding) {
-        progressBar.gone()
-        submitButton.visible()
-        errorTv.visible()
-        errorTv.text = paymentDetailUPIModel.errorMessage
-      }
+    private fun render(paymentDetailUPIModel: PaymentDetailUPIModel) {
+        if (paymentDetailUPIModel.isLoading) {
+            with(binding) {
+                progressBar.visible()
+                submitButton.gone()
+                errorTv.gone()
+                errorTv.text = ""
+            }
+        }
+
+        if (paymentDetailUPIModel.errorMessage.isNotEmpty()) {
+            with(binding) {
+                progressBar.gone()
+                submitButton.visible()
+                errorTv.visible()
+                errorTv.text = paymentDetailUPIModel.errorMessage
+            }
+        }
     }
-  }
 
-  private fun navigateToVerification() {
-    findNavController().navigate(R.id.action_paymentDetailUPIFragment_to_paymentVerificationFragment)
-  }
+    private fun navigateToVerification() {
+        findNavController().navigate(R.id.action_paymentDetailUPIFragment_to_paymentVerificationFragment)
+    }
 
-  private fun navigateToFailure() {
-    findNavController().navigate(R.id.action_paymentDetailUPIFragment_to_paymentVerificationFragment)
-  }
+    private fun navigateToFailure() {
+        findNavController().navigate(R.id.action_paymentDetailUPIFragment_to_paymentVerificationFragment)
+    }
 
-  companion object {
-    fun newInstance() = PaymentDetailUPIFragment()
-  }
+    companion object {
+        fun newInstance() = PaymentDetailUPIFragment()
+    }
 }

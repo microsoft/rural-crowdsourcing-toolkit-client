@@ -15,32 +15,32 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface PaymentAPI {
-  @POST("/payments/accounts")
-  suspend fun addAccount(
-    @Header("karya-id-token") idToken: String,
-    @Body body: PaymentAccountRequest
-  ): Response<PaymentInfoResponse>
+    @POST("/payments/accounts")
+    suspend fun addAccount(
+        @Header("karya-id-token") idToken: String,
+        @Body body: PaymentAccountRequest
+    ): Response<PaymentInfoResponse>
 
-  @PUT("/payments/accounts/{id}/verify")
-  suspend fun verifyAccount(
-    @Header("karya-id-token") idToken: String,
-    @Path("id") accountRecordId: String,
-    @Body paymentVerifyRequest: PaymentVerifyRequest,
-  ): Response<PaymentInfoResponse>
+    @PUT("/payments/accounts/{id}/verify")
+    suspend fun verifyAccount(
+        @Header("karya-id-token") idToken: String,
+        @Path("id") accountRecordId: String,
+        @Body paymentVerifyRequest: PaymentVerifyRequest,
+    ): Response<PaymentInfoResponse>
 
-  @GET("/payments/transaction")
-  suspend fun getTransactions(
-    @Header("karya-id-token") idToken: String,
-    @Query("from") timeToken: String,
-  ): Response<List<PaymentTransactionResponse>>
+    @GET("/payments/transaction")
+    suspend fun getTransactions(
+        @Header("karya-id-token") idToken: String,
+        @Query("from") timeToken: String,
+    ): Response<List<PaymentTransactionResponse>>
 
-  @GET("/payments/accounts/current")
-  suspend fun getCurrentAccountStatus(
-    @Header("karya-id-token") idToken: String,
-  ): Response<PaymentInfoResponse>
+    @GET("/payments/accounts/current")
+    suspend fun getCurrentAccountStatus(
+        @Header("karya-id-token") idToken: String,
+    ): Response<PaymentInfoResponse>
 
-  @GET("/payments/worker/earnings")
-  suspend fun getWorkerEarnings(
-    @Header("karya-id-token") idToken: String,
-  ): Response<WorkerEarningsResponse>
+    @GET("/payments/worker/earnings")
+    suspend fun getWorkerEarnings(
+        @Header("karya-id-token") idToken: String,
+    ): Response<WorkerEarningsResponse>
 }

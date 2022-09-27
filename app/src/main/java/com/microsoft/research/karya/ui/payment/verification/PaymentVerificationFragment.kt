@@ -20,76 +20,76 @@ import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class PaymentVerificationFragment : Fragment(R.layout.fragment_payment_verification) {
-  private val binding by viewBinding(FragmentPaymentVerificationBinding::bind)
-  private val viewModel by viewModels<PaymentVerificationViewModel>()
+    private val binding by viewBinding(FragmentPaymentVerificationBinding::bind)
+    private val viewModel by viewModels<PaymentVerificationViewModel>()
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    setupListeners()
-    viewModel.checkStatus()
-  }
-
-  private fun setupListeners() {
-    binding.successBtn.setOnClickListener { confirmStatus(true) }
-
-    binding.failureBtn.setOnClickListener { confirmStatus(false) }
-
-    viewModel.uiStateFlow.observe(viewLifecycle, viewLifecycleScope) { paymentModel ->
-      Log.d("VALUE_EMITTED", paymentModel.toString())
-      render(paymentModel)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupListeners()
+        viewModel.checkStatus()
     }
 
-    viewModel
-      .navigationFlow
-      .onEach { navigation ->
-        when (navigation) {
-          PaymentVerificationNavigation.DASHBOARD -> navigateToDashboard()
-          PaymentVerificationNavigation.FAILURE -> navigateToFailure()
-        }
-      }
-      .launchIn(viewLifecycleScope)
-  }
+    private fun setupListeners() {
+        binding.successBtn.setOnClickListener { confirmStatus(true) }
 
-  private fun render(paymentFailureModel: PaymentVerificationModel) {
-    if (paymentFailureModel.isLoading) {
-      with(binding) {
-        failureBtn.gone()
-        successBtn.gone()
-        paymentVerificationStatusTv.text = getString(R.string.verification_loading)
-        progressBar.visible()
-      }
-    } else {
-      if (paymentFailureModel.requestProcessed) {
-        with(binding) {
-          failureBtn.visible()
-          successBtn.visible()
-          paymentVerificationStatusTv.text = getString(R.string.verification_request_processed)
-          progressBar.gone()
+        binding.failureBtn.setOnClickListener { confirmStatus(false) }
+
+        viewModel.uiStateFlow.observe(viewLifecycle, viewLifecycleScope) { paymentModel ->
+            Log.d("VALUE_EMITTED", paymentModel.toString())
+            render(paymentModel)
         }
-      } else {
-        with(binding) {
-          failureBtn.gone()
-          successBtn.gone()
-          paymentVerificationStatusTv.text = getString(R.string.verification_request_processing)
-          progressBar.gone()
-        }
-      }
+
+        viewModel
+            .navigationFlow
+            .onEach { navigation ->
+                when (navigation) {
+                    PaymentVerificationNavigation.DASHBOARD -> navigateToDashboard()
+                    PaymentVerificationNavigation.FAILURE -> navigateToFailure()
+                }
+            }
+            .launchIn(viewLifecycleScope)
     }
-  }
 
-  private fun navigateToDashboard() {
-    findNavController().navigate(R.id.action_paymentVerificationFragment_to_paymentDashboardFragment)
-  }
+    private fun render(paymentFailureModel: PaymentVerificationModel) {
+        if (paymentFailureModel.isLoading) {
+            with(binding) {
+                failureBtn.gone()
+                successBtn.gone()
+                paymentVerificationStatusTv.text = getString(R.string.verification_loading)
+                progressBar.visible()
+            }
+        } else {
+            if (paymentFailureModel.requestProcessed) {
+                with(binding) {
+                    failureBtn.visible()
+                    successBtn.visible()
+                    paymentVerificationStatusTv.text = getString(R.string.verification_request_processed)
+                    progressBar.gone()
+                }
+            } else {
+                with(binding) {
+                    failureBtn.gone()
+                    successBtn.gone()
+                    paymentVerificationStatusTv.text = getString(R.string.verification_request_processing)
+                    progressBar.gone()
+                }
+            }
+        }
+    }
 
-  private fun navigateToFailure() {
-    findNavController().navigate(R.id.action_global_paymentFailureFragment)
-  }
+    private fun navigateToDashboard() {
+        findNavController().navigate(R.id.action_paymentVerificationFragment_to_paymentDashboardFragment)
+    }
 
-  private fun confirmStatus(confirm: Boolean) {
-    viewModel.verifyAccount(confirm)
-  }
+    private fun navigateToFailure() {
+        findNavController().navigate(R.id.action_global_paymentFailureFragment)
+    }
 
-  companion object {
-    fun newInstance() = PaymentVerificationFragment()
-  }
+    private fun confirmStatus(confirm: Boolean) {
+        viewModel.verifyAccount(confirm)
+    }
+
+    companion object {
+        fun newInstance() = PaymentVerificationFragment()
+    }
 }

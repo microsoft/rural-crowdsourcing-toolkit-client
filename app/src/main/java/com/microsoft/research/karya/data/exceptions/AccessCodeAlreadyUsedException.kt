@@ -6,6 +6,5 @@
 package com.microsoft.research.karya.data.exceptions
 
 import com.microsoft.research.karya.R
-import com.microsoft.research.karya.data.exceptions.KaryaException
 
 class AccessCodeAlreadyUsedException : KaryaException(R.string.access_code_already_used)

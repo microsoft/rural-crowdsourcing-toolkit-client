@@ -5,5 +5,5 @@ import dagger.assisted.AssistedFactory
 
 @AssistedFactory
 interface AssistantFactory {
-  fun create(lifecycleOwner: LifecycleOwner): Assistant
+    fun create(lifecycleOwner: LifecycleOwner): Assistant
 }

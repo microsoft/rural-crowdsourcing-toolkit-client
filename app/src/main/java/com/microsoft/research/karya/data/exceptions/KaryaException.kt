@@ -9,10 +9,10 @@ import android.content.Context
 import androidx.annotation.StringRes
 import com.microsoft.research.karya.R
 
-open class KaryaException(@StringRes val errorId: Int = R.string.unknown_error): Throwable() {
+open class KaryaException(@StringRes val errorId: Int = R.string.unknown_error) : Throwable() {
 
-  // Get message from context
-  fun getMessage(context: Context): String {
-    return context.getString(errorId)
-  }
+    // Get message from context
+    fun getMessage(context: Context): String {
+        return context.getString(errorId)
+    }
 }

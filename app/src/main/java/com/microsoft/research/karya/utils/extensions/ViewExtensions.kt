@@ -7,27 +7,27 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
 fun View.visible() {
-  this.visibility = View.VISIBLE
+    this.visibility = View.VISIBLE
 }
 
 fun View.invisible() {
-  this.visibility = View.INVISIBLE
+    this.visibility = View.INVISIBLE
 }
 
 fun View.gone() {
-  this.visibility = View.GONE
+    this.visibility = View.GONE
 }
 
 fun View.enable() {
-  this.isEnabled = true
+    this.isEnabled = true
 }
 
 fun View.disable() {
-  this.isEnabled = false
+    this.isEnabled = false
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun View.clicks(): Flow<Unit> = callbackFlow {
-  setOnClickListener { trySend(Unit) }
-  awaitClose { setOnClickListener(null) }
+    setOnClickListener { trySend(Unit) }
+    awaitClose { setOnClickListener(null) }
 }
