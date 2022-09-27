@@ -44,6 +44,8 @@ allprojects {
         /**
          * By default, Ktlint throws doesn't allow wildcard-imports
          * and classes with name other than filename
+         * Although it is a good practice, current code violates this principle
+         * Once this issue has been addressed we can remove 'filename' from the list
          */
         disabledRules.set(listOf("no-wildcard-imports", "filename"))
     }
