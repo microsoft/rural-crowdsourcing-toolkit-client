@@ -5,9 +5,9 @@
 package com.microsoft.research.karya.data.model.karya.enums
 
 enum class PaymentRequestStatus {
-  requested,
-  approved,
-  denied,
-  failed,
-  paid
+    requested,
+    approved,
+    denied,
+    failed,
+    paid
 }

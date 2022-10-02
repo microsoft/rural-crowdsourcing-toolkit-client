@@ -17,43 +17,43 @@ import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class PaymentFailureFragment : Fragment(R.layout.fragment_payment_failure) {
-  private val binding by viewBinding(FragmentPaymentFailureBinding::bind)
-  private val viewModel by viewModels<PaymentFailureViewModel>()
+    private val binding by viewBinding(FragmentPaymentFailureBinding::bind)
+    private val viewModel by viewModels<PaymentFailureViewModel>()
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    setupListeners()
-  }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupListeners()
+    }
 
-  private fun setupListeners() {
-    binding.registerButton.setOnClickListener { navigateToRegistration() }
+    private fun setupListeners() {
+        binding.registerButton.setOnClickListener { navigateToRegistration() }
 
-    binding.backButton.setOnClickListener { navigateToDashboard() }
+        binding.backButton.setOnClickListener { navigateToDashboard() }
 
-    viewModel.uiStateFlow.observe(viewLifecycle, viewLifecycleScope) { paymentModel -> render(paymentModel) }
+        viewModel.uiStateFlow.observe(viewLifecycle, viewLifecycleScope) { paymentModel -> render(paymentModel) }
 
-    viewModel
-      .navigationFlow
-      .onEach { navigation ->
-        when (navigation) {
-          PaymentFailureNavigation.DASHBOARD -> navigateToDashboard()
-          PaymentFailureNavigation.REGISTRATION -> navigateToRegistration()
-        }
-      }
-      .launchIn(viewLifecycleScope)
-  }
+        viewModel
+            .navigationFlow
+            .onEach { navigation ->
+                when (navigation) {
+                    PaymentFailureNavigation.DASHBOARD -> navigateToDashboard()
+                    PaymentFailureNavigation.REGISTRATION -> navigateToRegistration()
+                }
+            }
+            .launchIn(viewLifecycleScope)
+    }
 
-  private fun render(paymentVerificationModel: PaymentFailureModel) {}
+    private fun render(paymentVerificationModel: PaymentFailureModel) {}
 
-  private fun navigateToDashboard() {
-    findNavController().navigate(R.id.action_paymentFailureFragment_to_homeScreen)
-  }
+    private fun navigateToDashboard() {
+        findNavController().navigate(R.id.action_paymentFailureFragment_to_homeScreen)
+    }
 
-  private fun navigateToRegistration() {
-    findNavController().navigate(R.id.action_paymentFailureFragment_to_paymentRegistrationFragment)
-  }
+    private fun navigateToRegistration() {
+        findNavController().navigate(R.id.action_paymentFailureFragment_to_paymentRegistrationFragment)
+    }
 
-  companion object {
-    fun newInstance() = PaymentFailureFragment()
-  }
+    companion object {
+        fun newInstance() = PaymentFailureFragment()
+    }
 }

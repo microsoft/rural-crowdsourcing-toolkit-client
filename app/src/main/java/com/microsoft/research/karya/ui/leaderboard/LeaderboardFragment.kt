@@ -17,35 +17,35 @@ import kotlinx.android.synthetic.main.app_toolbar.*
 
 @AndroidEntryPoint
 class LeaderboardFragment : Fragment(R.layout.fragment_leaderboard) {
-  private val binding by viewBinding(FragmentLeaderboardBinding::bind)
-  private val viewModel by viewModels<LeaderboardViewModel>()
+    private val binding by viewBinding(FragmentLeaderboardBinding::bind)
+    private val viewModel by viewModels<LeaderboardViewModel>()
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    setupViews()
-    observeUiState()
-  }
-
-  private fun setupViews() {
-    toolbarBackBtn.visible()
-    toolbarBackBtn.setOnClickListener {
-      findNavController().popBackStack()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupViews()
+        observeUiState()
     }
-    binding.leaderboardRv.adapter = LeaderboardListAdapter(emptyList())
-  }
 
-  private fun observeUiState() {
-    with(binding) {
-      viewModel.leaderboardList.observe(viewLifecycleOwner.lifecycle, lifecycleScope) { lbList ->
-        if (lbList.isEmpty()) {
-          leaderboardRv.gone()
-          emptyLeaderboardTv.visible()
-        } else {
-          emptyLeaderboardTv.gone()
-          leaderboardRv.visible()
-          (leaderboardRv.adapter as LeaderboardListAdapter).updateList(lbList)
+    private fun setupViews() {
+        toolbarBackBtn.visible()
+        toolbarBackBtn.setOnClickListener {
+            findNavController().popBackStack()
         }
-      }
+        binding.leaderboardRv.adapter = LeaderboardListAdapter(emptyList())
     }
-  }
+
+    private fun observeUiState() {
+        with(binding) {
+            viewModel.leaderboardList.observe(viewLifecycleOwner.lifecycle, lifecycleScope) { lbList ->
+                if (lbList.isEmpty()) {
+                    leaderboardRv.gone()
+                    emptyLeaderboardTv.visible()
+                } else {
+                    emptyLeaderboardTv.gone()
+                    leaderboardRv.visible()
+                    (leaderboardRv.adapter as LeaderboardListAdapter).updateList(lbList)
+                }
+            }
+        }
+    }
 }

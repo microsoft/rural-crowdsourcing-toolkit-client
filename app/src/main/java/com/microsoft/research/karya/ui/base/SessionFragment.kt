@@ -12,24 +12,24 @@ import com.microsoft.research.karya.data.manager.AuthManager
 import javax.inject.Inject
 
 abstract class SessionFragment : BaseFragment {
-  constructor() : super()
-  constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
+    constructor() : super()
+    constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
 
-  @Inject lateinit var authManager: AuthManager
+    @Inject lateinit var authManager: AuthManager
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-    authManager.currAuthStatus.observe(
-      viewLifecycleOwner,
-      { authStatus ->
-        if (authStatus == AUTH_STATUS.UNAUTHENTICATED) {
-          onSessionExpired()
-        }
-      }
-    )
-    return super.onCreateView(inflater, container, savedInstanceState)
-  }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        authManager.currAuthStatus.observe(
+            viewLifecycleOwner,
+            { authStatus ->
+                if (authStatus == AUTH_STATUS.UNAUTHENTICATED) {
+                    onSessionExpired()
+                }
+            }
+        )
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
 
-  protected open fun onSessionExpired() {
-    findNavController().navigate(R.id.action_global_loginFlow)
-  }
+    protected open fun onSessionExpired() {
+        findNavController().navigate(R.id.action_global_loginFlow)
+    }
 }

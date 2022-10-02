@@ -15,41 +15,41 @@ import javax.inject.Inject
 class AccessCodeViewModel
 @Inject
 constructor(
-  private val workerRepository: WorkerRepository,
-  private val authManager: AuthManager,
-  private val baseUrlManager: BaseUrlManager
+    private val workerRepository: WorkerRepository,
+    private val authManager: AuthManager,
+    private val baseUrlManager: BaseUrlManager
 ) :
-  ViewModel() {
+    ViewModel() {
 
-  private val _accessCodeUiState: MutableStateFlow<AccessCodeUiState> =
-    MutableStateFlow(AccessCodeUiState.Initial)
-  val accessCodeUiState = _accessCodeUiState.asStateFlow()
+    private val _accessCodeUiState: MutableStateFlow<AccessCodeUiState> =
+        MutableStateFlow(AccessCodeUiState.Initial)
+    val accessCodeUiState = _accessCodeUiState.asStateFlow()
 
-  private val _accessCodeEffects: MutableSharedFlow<AccessCodeEffects> = MutableSharedFlow()
-  val accessCodeEffects = _accessCodeEffects.asSharedFlow()
+    private val _accessCodeEffects: MutableSharedFlow<AccessCodeEffects> = MutableSharedFlow()
+    val accessCodeEffects = _accessCodeEffects.asSharedFlow()
 
-  fun checkAccessCode(accessCode: String) {
-    workerRepository
-      .verifyAccessCode(accessCode)
-      .onStart { _accessCodeUiState.value = AccessCodeUiState.Loading }
-      .onEach { worker ->
-        createWorker(accessCode, worker)
-        authManager.updateLoggedInWorker(worker.id)
-        _accessCodeUiState.value = AccessCodeUiState.Success(worker.language)
-        _accessCodeEffects.emit(AccessCodeEffects.Navigate)
-      }
-      .catch { exception ->
-        _accessCodeUiState.value = AccessCodeUiState.Error(exception)
-      }
-      .launchIn(viewModelScope)
-  }
+    fun checkAccessCode(accessCode: String) {
+        workerRepository
+            .verifyAccessCode(accessCode)
+            .onStart { _accessCodeUiState.value = AccessCodeUiState.Loading }
+            .onEach { worker ->
+                createWorker(accessCode, worker)
+                authManager.updateLoggedInWorker(worker.id)
+                _accessCodeUiState.value = AccessCodeUiState.Success(worker.language)
+                _accessCodeEffects.emit(AccessCodeEffects.Navigate)
+            }
+            .catch { exception ->
+                _accessCodeUiState.value = AccessCodeUiState.Error(exception)
+            }
+            .launchIn(viewModelScope)
+    }
 
-  private fun createWorker(accessCode: String, workerRecord: WorkerRecord) {
-    val dbWorker = workerRecord.copy(accessCode = accessCode)
-    viewModelScope.launch { workerRepository.upsertWorker(dbWorker) }
-  }
+    private fun createWorker(accessCode: String, workerRecord: WorkerRecord) {
+        val dbWorker = workerRecord.copy(accessCode = accessCode)
+        viewModelScope.launch { workerRepository.upsertWorker(dbWorker) }
+    }
 
-  suspend fun setURL(decodedURL: String) {
-    baseUrlManager.updateBaseUrl(decodedURL)
-  }
+    suspend fun setURL(decodedURL: String) {
+        baseUrlManager.updateBaseUrl(decodedURL)
+    }
 }

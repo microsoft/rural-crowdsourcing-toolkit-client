@@ -22,117 +22,116 @@ import kotlin.properties.Delegates
 class SentenceCorpusViewModel
 @Inject
 constructor(
-  assignmentRepository: AssignmentRepository,
-  taskRepository: TaskRepository,
-  microTaskRepository: MicroTaskRepository,
-  @FilesDir fileDirPath: String,
-  authManager: AuthManager,
-  dataStore: DataStore<Preferences>
+    assignmentRepository: AssignmentRepository,
+    taskRepository: TaskRepository,
+    microTaskRepository: MicroTaskRepository,
+    @FilesDir fileDirPath: String,
+    authManager: AuthManager,
+    dataStore: DataStore<Preferences>
 ) : BaseMTRendererViewModel(
-  assignmentRepository,
-  taskRepository,
-  microTaskRepository,
-  fileDirPath,
-  authManager,
-  dataStore
+    assignmentRepository,
+    taskRepository,
+    microTaskRepository,
+    fileDirPath,
+    authManager,
+    dataStore
 ) {
-  private val _contextText: MutableStateFlow<String> = MutableStateFlow("")
-  val contextText = _contextText.asStateFlow()
+    private val _contextText: MutableStateFlow<String> = MutableStateFlow("")
+    val contextText = _contextText.asStateFlow()
 
-  private val _sentences: MutableStateFlow<ArrayList<String>> = MutableStateFlow(ArrayList())
-  val sentences = _sentences.asStateFlow()
+    private val _sentences: MutableStateFlow<ArrayList<String>> = MutableStateFlow(ArrayList())
+    val sentences = _sentences.asStateFlow()
 
-  // Trigger Spotlight
-  private val _playRecordPromptTrigger: MutableStateFlow<Boolean> = MutableStateFlow(false)
-  val playRecordPromptTrigger = _playRecordPromptTrigger.asStateFlow()
+    // Trigger Spotlight
+    private val _playRecordPromptTrigger: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val playRecordPromptTrigger = _playRecordPromptTrigger.asStateFlow()
 
-  var limit by Delegates.notNull<Int>()
+    var limit by Delegates.notNull<Int>()
 
-  override fun setupViewModel(taskId: String, completed: Int, total: Int) {
-    super.setupViewModel(taskId, completed, total)
-  }
-
-  override fun setupMicrotask() {
-    // TODO: Move to Gson
-    val contextText = currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("prompt").asString
-    _contextText.value = contextText
-
-    limit = try {
-      currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("limit").asInt
-    } catch (e: Exception) {
-      999999
+    override fun setupViewModel(taskId: String, completed: Int, total: Int) {
+        super.setupViewModel(taskId, completed, total)
     }
 
-    // Reset sentence list
-    _sentences.value = ArrayList()
+    override fun setupMicrotask() {
+        // TODO: Move to Gson
+        val contextText = currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("prompt").asString
+        _contextText.value = contextText
 
-    if (currentAssignment.status == MicrotaskAssignmentStatus.COMPLETED) {
-      renderOutputData()
-    }
-  }
+        limit = try {
+            currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("limit").asInt
+        } catch (e: Exception) {
+            999999
+        }
 
-  override fun onFirstTimeVisit() {
-    super.onFirstTimeVisit()
-    onAssistantClick()
-  }
+        // Reset sentence list
+        _sentences.value = ArrayList()
 
-  private fun playRecordPrompt() {
-    _playRecordPromptTrigger.value = true
-  }
-
-  private fun onAssistantClick() {
-    playRecordPrompt()
-  }
-
-  private fun renderOutputData() {
-    val outputData = currentAssignment.output.asJsonObject.getAsJsonObject("data")
-    val sentences = outputData.getAsJsonObject("sentences")
-
-    for (sentence in sentences.keySet()) {
-      addSentence(sentence)
-    }
-  }
-
-  /** Handle next button click */
-  fun handleNextClick() {
-
-    /** Log button press */
-    val message = JsonObject()
-    message.addProperty("type", "o")
-    message.addProperty("button", "NEXT")
-    log(message)
-
-    val sentences = JsonObject()
-
-    for (sentence in _sentences.value) {
-      val status = JsonObject()
-      status.addProperty("status", "UNKNOWN")
-      sentences.add(sentence, status)
+        if (currentAssignment.status == MicrotaskAssignmentStatus.COMPLETED) {
+            renderOutputData()
+        }
     }
 
-    outputData.add("sentences", sentences)
-
-    viewModelScope.launch {
-      completeAndSaveCurrentMicrotask()
-      moveToNextMicrotask()
+    override fun onFirstTimeVisit() {
+        super.onFirstTimeVisit()
+        onAssistantClick()
     }
-  }
 
-  /** Handle next button click */
-  fun handleBackClick() {
-    moveToPreviousMicrotask()
-  }
+    private fun playRecordPrompt() {
+        _playRecordPromptTrigger.value = true
+    }
 
-  fun addSentence(sentence: String) {
-    val temp = ArrayList(_sentences.value)
-    temp.add(0, sentence)
-    _sentences.value = temp
-  }
+    private fun onAssistantClick() {
+        playRecordPrompt()
+    }
 
-  fun removeSentenceAt(position: Int) {
-    val temp = ArrayList(_sentences.value)
-    temp.removeAt(position)
-    _sentences.value = temp
-  }
+    private fun renderOutputData() {
+        val outputData = currentAssignment.output.asJsonObject.getAsJsonObject("data")
+        val sentences = outputData.getAsJsonObject("sentences")
 
+        for (sentence in sentences.keySet()) {
+            addSentence(sentence)
+        }
+    }
+
+    /** Handle next button click */
+    fun handleNextClick() {
+
+        /** Log button press */
+        val message = JsonObject()
+        message.addProperty("type", "o")
+        message.addProperty("button", "NEXT")
+        log(message)
+
+        val sentences = JsonObject()
+
+        for (sentence in _sentences.value) {
+            val status = JsonObject()
+            status.addProperty("status", "UNKNOWN")
+            sentences.add(sentence, status)
+        }
+
+        outputData.add("sentences", sentences)
+
+        viewModelScope.launch {
+            completeAndSaveCurrentMicrotask()
+            moveToNextMicrotask()
+        }
+    }
+
+    /** Handle next button click */
+    fun handleBackClick() {
+        moveToPreviousMicrotask()
+    }
+
+    fun addSentence(sentence: String) {
+        val temp = ArrayList(_sentences.value)
+        temp.add(0, sentence)
+        _sentences.value = temp
+    }
+
+    fun removeSentenceAt(position: Int) {
+        val temp = ArrayList(_sentences.value)
+        temp.removeAt(position)
+        _sentences.value = temp
+    }
 }

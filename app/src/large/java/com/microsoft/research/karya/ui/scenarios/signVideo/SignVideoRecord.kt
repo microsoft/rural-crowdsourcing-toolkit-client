@@ -1,7 +1,6 @@
 package com.microsoft.research.karya.ui.scenarios.signVideo
 
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.util.Size
 import androidx.appcompat.app.AppCompatActivity
 /* import com.abedelazizshe.lightcompressorlibrary.CompressionListener
@@ -27,58 +26,59 @@ import java.io.FileOutputStream
 
 class SignVideoRecord : AppCompatActivity() {
 
-  private lateinit var video_file_path: String
-  private lateinit var scratch_video_file_path: String
+    private lateinit var video_file_path: String
+    private lateinit var scratch_video_file_path: String
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.fragment_sign_video_record)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.fragment_sign_video_record)
 
-    video_file_path = intent.getStringExtra("video_file_path")!!
-    scratch_video_file_path = "${video_file_path}.scratch.mp4"
+        video_file_path = intent.getStringExtra("video_file_path")!!
+        scratch_video_file_path = "$video_file_path.scratch.mp4"
 
-    compressionProgress.invisible()
-    compressionProgress.progress = 0
+        compressionProgress.invisible()
+        compressionProgress.progress = 0
 
-    cameraView.setLifecycleOwner(this)
-    cameraView.facing = Facing.FRONT
-    cameraView.audio = Audio.OFF;
-    cameraView.mode = Mode.VIDEO
-    cameraView.addCameraListener(object : CameraListener() {
-      override fun onVideoTaken(video: VideoResult) {
-        super.onVideoTaken(video)
-        VideoCompress.compressVideoMedium(scratch_video_file_path, video_file_path, object: VideoCompress.CompressListener {
-          override fun onStart() = runOnUiThread {
-            stopRecordButton.invisible()
-            compressionProgress.visible()
-            compressionProgress.progress = 0
-          }
+        cameraView.setLifecycleOwner(this)
+        cameraView.facing = Facing.FRONT
+        cameraView.audio = Audio.OFF
+        cameraView.mode = Mode.VIDEO
+        cameraView.addCameraListener(object : CameraListener() {
+            override fun onVideoTaken(video: VideoResult) {
+                super.onVideoTaken(video)
+                VideoCompress.compressVideoMedium(
+                    scratch_video_file_path, video_file_path,
+                    object : VideoCompress.CompressListener {
+                        override fun onStart() = runOnUiThread {
+                            stopRecordButton.invisible()
+                            compressionProgress.visible()
+                            compressionProgress.progress = 0
+                        }
 
-          override fun onSuccess() {
-            File(scratch_video_file_path).delete()
-            setResult(RESULT_OK, intent)
-            finish()
-          }
+                        override fun onSuccess() {
+                            File(scratch_video_file_path).delete()
+                            setResult(RESULT_OK, intent)
+                            finish()
+                        }
 
-          override fun onFail() {
-            val inFile = FileInputStream(scratch_video_file_path)
-            val outFile = FileOutputStream(video_file_path)
-            inFile.copyTo(outFile)
-            inFile.close()
-            outFile.close()
-            File(scratch_video_file_path).delete()
-            setResult(RESULT_OK, intent)
-            finish()
-          }
+                        override fun onFail() {
+                            val inFile = FileInputStream(scratch_video_file_path)
+                            val outFile = FileOutputStream(video_file_path)
+                            inFile.copyTo(outFile)
+                            inFile.close()
+                            outFile.close()
+                            File(scratch_video_file_path).delete()
+                            setResult(RESULT_OK, intent)
+                            finish()
+                        }
 
-          override fun onProgress(percent: Float) {
-            runOnUiThread {
-              compressionProgress.progress = percent.toInt()
-            }
-          }
-
-        })
-
+                        override fun onProgress(percent: Float) {
+                            runOnUiThread {
+                                compressionProgress.progress = percent.toInt()
+                            }
+                        }
+                    }
+                )
 
         /* VideoCompressor.start(
           srcPath = scratch_video_file_path,
@@ -131,40 +131,39 @@ class SignVideoRecord : AppCompatActivity() {
             }
           }
         ) */
-      }
-    })
-    setupCamera()
-    stopRecordButton.setOnClickListener { handleStopRecordClick() }
-  }
-
-  private fun onStartRecording() {
-    cameraView.takeVideo(File(scratch_video_file_path))
-    stopRecordButton.visible()
-  }
-
-  private fun setupCamera() {
-
-    faceBoundsOverlay.setOnStartRecording(::onStartRecording)
-
-    val faceDetector = FaceDetector(faceBoundsOverlay)
-    cameraView.addFrameProcessor {
-      faceDetector.process(
-        Frame(
-          data = it.getData(),
-          rotation = it.rotation,
-          size = Size(it.size.width, it.size.height),
-          format = it.format,
-          lensFacing = LensFacing.FRONT
-        )
-      )
+            }
+        })
+        setupCamera()
+        stopRecordButton.setOnClickListener { handleStopRecordClick() }
     }
-  }
 
-  private fun handleStopRecordClick() {
-    cameraView.stopVideo()
-  }
+    private fun onStartRecording() {
+        cameraView.takeVideo(File(scratch_video_file_path))
+        stopRecordButton.visible()
+    }
 
-  override fun onBackPressed() {
-  }
+    private fun setupCamera() {
 
+        faceBoundsOverlay.setOnStartRecording(::onStartRecording)
+
+        val faceDetector = FaceDetector(faceBoundsOverlay)
+        cameraView.addFrameProcessor {
+            faceDetector.process(
+                Frame(
+                    data = it.getData(),
+                    rotation = it.rotation,
+                    size = Size(it.size.width, it.size.height),
+                    format = it.format,
+                    lensFacing = LensFacing.FRONT
+                )
+            )
+        }
+    }
+
+    private fun handleStopRecordClick() {
+        cameraView.stopVideo()
+    }
+
+    override fun onBackPressed() {
+    }
 }

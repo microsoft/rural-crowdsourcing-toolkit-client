@@ -5,13 +5,13 @@
 package com.microsoft.research.karya.data.model.karya.enums
 
 enum class TaskStatus {
-  CREATED,
-  SUBMITTED,
-  VALIDATING,
-  VALIDATED,
-  INVALID,
-  APPROVING,
-  APPROVED,
-  ASSIGNED,
-  COMPLETED
+    CREATED,
+    SUBMITTED,
+    VALIDATING,
+    VALIDATED,
+    INVALID,
+    APPROVING,
+    APPROVED,
+    ASSIGNED,
+    COMPLETED
 }

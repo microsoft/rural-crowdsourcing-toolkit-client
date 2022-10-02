@@ -15,97 +15,97 @@ import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class PaymentDashboardFragment : Fragment(R.layout.fragment_payment_dashboard) {
-  private val binding by viewBinding(FragmentPaymentDashboardBinding::bind)
-  private val viewModel by viewModels<PaymentDashboardViewModel>()
+    private val binding by viewBinding(FragmentPaymentDashboardBinding::bind)
+    private val viewModel by viewModels<PaymentDashboardViewModel>()
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    setupListeners()
-    viewModel.fetchData()
-  }
-
-  private fun setupListeners() {
-    binding.appTb.toolbarBackBtn.visible()
-    binding.appTb.toolbarBackBtn.setOnClickListener {
-      requireActivity().onBackPressed()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupListeners()
+        viewModel.fetchData()
     }
 
-    viewModel
-      .navigationFlow
-      .onEach { paymentDashboardNavigation -> navigate(paymentDashboardNavigation) }
-      .launchIn(viewLifecycleScope)
+    private fun setupListeners() {
+        binding.appTb.toolbarBackBtn.visible()
+        binding.appTb.toolbarBackBtn.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
 
-    viewModel.uiStateFlow.observe(viewLifecycle, viewLifecycleScope) { render(it) }
+        viewModel
+            .navigationFlow
+            .onEach { paymentDashboardNavigation -> navigate(paymentDashboardNavigation) }
+            .launchIn(viewLifecycleScope)
 
-    binding.transactionsButton.setOnClickListener { navigate(PaymentDashboardNavigation.TRANSACTIONS) }
+        viewModel.uiStateFlow.observe(viewLifecycle, viewLifecycleScope) { render(it) }
 
-    binding.updateAccountButton.setOnClickListener { navigate(PaymentDashboardNavigation.REGISTRATION) }
-  }
+        binding.transactionsButton.setOnClickListener { navigate(PaymentDashboardNavigation.TRANSACTIONS) }
 
-  private fun render(paymentDashboardModel: PaymentDashboardModel) {
-    if (paymentDashboardModel.isLoading) {
-      showLoading()
-    } else {
-      with(binding) {
-        balanceAmountTv.text = getString(R.string.rs_float, paymentDashboardModel.balance)
-        transferredAmountTv.text = getString(R.string.rs_float, paymentDashboardModel.transferred)
-        setupAccountCard(paymentDashboardModel.userAccountDetail)
-        setupTransactionCard(paymentDashboardModel.userTransactionDetail)
-      }
-      hideLoading()
+        binding.updateAccountButton.setOnClickListener { navigate(PaymentDashboardNavigation.REGISTRATION) }
     }
-  }
 
-  private fun setupAccountCard(userAccountDetail: UserAccountDetail) {
-    with(binding) {
-      nameTv.text = userAccountDetail.name
-      accountIdTv.text = userAccountDetail.id
-      paymentModeTv.text = when (userAccountDetail.accountType) {
-        "vpa" -> getString(R.string.upi_label)
-        "bank_account" -> getString(R.string.bank_account_label)
-        else -> "---"
-      }
+    private fun render(paymentDashboardModel: PaymentDashboardModel) {
+        if (paymentDashboardModel.isLoading) {
+            showLoading()
+        } else {
+            with(binding) {
+                balanceAmountTv.text = getString(R.string.rs_float, paymentDashboardModel.balance)
+                transferredAmountTv.text = getString(R.string.rs_float, paymentDashboardModel.transferred)
+                setupAccountCard(paymentDashboardModel.userAccountDetail)
+                setupTransactionCard(paymentDashboardModel.userTransactionDetail)
+            }
+            hideLoading()
+        }
     }
-  }
 
-  private fun setupTransactionCard(userTransactionDetail: UserTransactionDetail) {
-    with(binding.latestTransactionCv) {
-      transactionValueTv.text = getString(R.string.rs_float, userTransactionDetail.amount)
-      referenceTv.text = userTransactionDetail.utr
-      dateTv.text = userTransactionDetail.date
-
-      transactionSuccessIv.invisible()
-      transactionFailureIv.invisible()
-      transactionPendingIv.invisible()
-
-      when (userTransactionDetail.status) {
-        "processed" -> transactionSuccessIv
-        "reversed" -> transactionFailureIv
-        else -> transactionPendingIv
-      }.visible()
+    private fun setupAccountCard(userAccountDetail: UserAccountDetail) {
+        with(binding) {
+            nameTv.text = userAccountDetail.name
+            accountIdTv.text = userAccountDetail.id
+            paymentModeTv.text = when (userAccountDetail.accountType) {
+                "vpa" -> getString(R.string.upi_label)
+                "bank_account" -> getString(R.string.bank_account_label)
+                else -> "---"
+            }
+        }
     }
-  }
 
-  private fun showLoading() {
-    with(binding) {
-      paymentsLl.invisible()
-      progressBar.visible()
+    private fun setupTransactionCard(userTransactionDetail: UserTransactionDetail) {
+        with(binding.latestTransactionCv) {
+            transactionValueTv.text = getString(R.string.rs_float, userTransactionDetail.amount)
+            referenceTv.text = userTransactionDetail.utr
+            dateTv.text = userTransactionDetail.date
+
+            transactionSuccessIv.invisible()
+            transactionFailureIv.invisible()
+            transactionPendingIv.invisible()
+
+            when (userTransactionDetail.status) {
+                "processed" -> transactionSuccessIv
+                "reversed" -> transactionFailureIv
+                else -> transactionPendingIv
+            }.visible()
+        }
     }
-  }
 
-  private fun hideLoading() {
-    with(binding) {
-      paymentsLl.visible()
-      progressBar.invisible()
+    private fun showLoading() {
+        with(binding) {
+            paymentsLl.invisible()
+            progressBar.visible()
+        }
     }
-  }
 
-  private fun navigate(paymentDashboardNavigation: PaymentDashboardNavigation) {
-    val resId =
-      when (paymentDashboardNavigation) {
-        PaymentDashboardNavigation.TRANSACTIONS -> R.id.action_paymentDashboardFragment_to_paymentTransactionFragment
-        PaymentDashboardNavigation.REGISTRATION -> R.id.action_paymentDashboardFragment_to_paymentRegistrationFragment
-      }
-    findNavController().navigate(resId)
-  }
+    private fun hideLoading() {
+        with(binding) {
+            paymentsLl.visible()
+            progressBar.invisible()
+        }
+    }
+
+    private fun navigate(paymentDashboardNavigation: PaymentDashboardNavigation) {
+        val resId =
+            when (paymentDashboardNavigation) {
+                PaymentDashboardNavigation.TRANSACTIONS -> R.id.action_paymentDashboardFragment_to_paymentTransactionFragment
+                PaymentDashboardNavigation.REGISTRATION -> R.id.action_paymentDashboardFragment_to_paymentRegistrationFragment
+            }
+        findNavController().navigate(resId)
+    }
 }

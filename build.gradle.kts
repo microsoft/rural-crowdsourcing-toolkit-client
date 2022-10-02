@@ -29,7 +29,27 @@ buildscript {
     }
 }
 
+plugins {
+    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+}
+
+apply {
+    from(rootProject.file("install-git-hooks.gradle"))
+}
+
 allprojects {
+
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    ktlint {
+        /**
+         * By default, Ktlint throws doesn't allow wildcard-imports
+         * and classes with name other than filename
+         * Although it is a good practice, current code violates this principle
+         * Once this issue has been addressed we can remove 'filename' from the list
+         */
+        disabledRules.set(listOf("no-wildcard-imports", "filename"))
+    }
+
     repositories {
         google()
         mavenCentral()
@@ -53,3 +73,10 @@ tasks {
         delete(rootProject.buildDir)
     }
 }
+
+/**
+ * registers installGitHooks task to run before build, this
+ * way whenever a new clone is made, the first build copies
+ * pre-commit script to .git/hooks
+ */
+tasks.getByPath(":app:preBuild").dependsOn(":installGitHook")

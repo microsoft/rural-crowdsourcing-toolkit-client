@@ -13,19 +13,19 @@ import javax.inject.Inject
 @HiltViewModel
 class LeaderboardViewModel
 @Inject constructor(
-  workerRepository: WorkerRepository
-)
-  : ViewModel() {
+    workerRepository: WorkerRepository
+) :
+    ViewModel() {
 
-  // Leaderboard list
-  private var _leaderboardList: MutableStateFlow<List<LeaderboardRecord>> =
-    MutableStateFlow(arrayListOf())
-  val leaderboardList = _leaderboardList.asStateFlow()
+    // Leaderboard list
+    private var _leaderboardList: MutableStateFlow<List<LeaderboardRecord>> =
+        MutableStateFlow(arrayListOf())
+    val leaderboardList = _leaderboardList.asStateFlow()
 
-  // On init, fetch and set leaderboard entries
-  init {
-    viewModelScope.launch {
-      _leaderboardList.value = workerRepository.getAllLeaderBoardRecords()
+    // On init, fetch and set leaderboard entries
+    init {
+        viewModelScope.launch {
+            _leaderboardList.value = workerRepository.getAllLeaderBoardRecords()
+        }
     }
-  }
 }

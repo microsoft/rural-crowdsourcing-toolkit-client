@@ -4,6 +4,6 @@
 package com.microsoft.research.karya.data.model.karya.enums
 
 enum class AuthType {
-  GOOGLE_OAUTH,
-  PHONE_OTP
+    GOOGLE_OAUTH,
+    PHONE_OTP
 }

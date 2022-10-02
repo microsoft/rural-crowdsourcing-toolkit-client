@@ -8,9 +8,9 @@ import retrofit2.http.Path
 
 interface LanguageAPI {
 
-  @GET("/language_assets/{code}")
-  suspend fun getLanguageAssets(
-    @Header("access-code") accessCode: String,
-    @Path("code") code: String,
-  ): Response<ResponseBody>
+    @GET("/language_assets/{code}")
+    suspend fun getLanguageAssets(
+        @Header("access-code") accessCode: String,
+        @Path("code") code: String,
+    ): Response<ResponseBody>
 }

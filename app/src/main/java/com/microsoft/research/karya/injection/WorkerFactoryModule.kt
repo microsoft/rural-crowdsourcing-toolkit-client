@@ -14,25 +14,25 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class WorkerFactoryModule {
 
-  @Provides
-  @Singleton
-  fun providesNgWorkerFactory(
-    assignmentRepository: AssignmentRepository,
-    karyaFileRepository: KaryaFileRepository,
-    microTaskRepository: MicroTaskRepository,
-    paymentRepository: PaymentRepository,
-    workerRepository: WorkerRepository,
-    @FilesDir fileDirPath: String,
-    authManager: AuthManager,
-  ): SyncDelegatingWorkerFactory {
-    return SyncDelegatingWorkerFactory(
-      assignmentRepository,
-      karyaFileRepository,
-      microTaskRepository,
-      paymentRepository,
-      workerRepository,
-      fileDirPath,
-      authManager
-    )
-  }
+    @Provides
+    @Singleton
+    fun providesNgWorkerFactory(
+        assignmentRepository: AssignmentRepository,
+        karyaFileRepository: KaryaFileRepository,
+        microTaskRepository: MicroTaskRepository,
+        paymentRepository: PaymentRepository,
+        workerRepository: WorkerRepository,
+        @FilesDir fileDirPath: String,
+        authManager: AuthManager,
+    ): SyncDelegatingWorkerFactory {
+        return SyncDelegatingWorkerFactory(
+            assignmentRepository,
+            karyaFileRepository,
+            microTaskRepository,
+            paymentRepository,
+            workerRepository,
+            fileDirPath,
+            authManager
+        )
+    }
 }

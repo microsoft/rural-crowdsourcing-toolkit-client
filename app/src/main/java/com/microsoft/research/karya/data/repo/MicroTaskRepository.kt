@@ -9,11 +9,11 @@ class MicroTaskRepository
 @Inject
 constructor(private val microTaskDao: MicroTaskDao, private val microtaskDaoExtra: MicrotaskDaoExtra) {
 
-  suspend fun getSubmittedMicrotasksWithInputFiles(): List<String> {
-    return microtaskDaoExtra.getSubmittedMicrotasksWithInputFiles()
-  }
+    suspend fun getSubmittedMicrotasksWithInputFiles(): List<String> {
+        return microtaskDaoExtra.getSubmittedMicrotasksWithInputFiles()
+    }
 
-  suspend fun getById(microtaskId: String): MicroTaskRecord {
-    return microTaskDao.getById(microtaskId)
-  }
+    suspend fun getById(microtaskId: String): MicroTaskRecord {
+        return microTaskDao.getById(microtaskId)
+    }
 }

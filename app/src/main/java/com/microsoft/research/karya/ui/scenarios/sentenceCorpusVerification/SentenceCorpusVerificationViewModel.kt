@@ -20,66 +20,65 @@ import javax.inject.Inject
 class SentenceCorpusVerificationViewModel
 @Inject
 constructor(
-  assignmentRepository: AssignmentRepository,
-  taskRepository: TaskRepository,
-  microTaskRepository: MicroTaskRepository,
-  @FilesDir fileDirPath: String,
-  authManager: AuthManager,
-  dataStore: DataStore<Preferences>
+    assignmentRepository: AssignmentRepository,
+    taskRepository: TaskRepository,
+    microTaskRepository: MicroTaskRepository,
+    @FilesDir fileDirPath: String,
+    authManager: AuthManager,
+    dataStore: DataStore<Preferences>
 ) : BaseMTRendererViewModel(
-  assignmentRepository,
-  taskRepository,
-  microTaskRepository,
-  fileDirPath,
-  authManager,
-  dataStore
+    assignmentRepository,
+    taskRepository,
+    microTaskRepository,
+    fileDirPath,
+    authManager,
+    dataStore
 ) {
-  private val _contextText: MutableStateFlow<String> = MutableStateFlow("")
-  val contextText = _contextText.asStateFlow()
+    private val _contextText: MutableStateFlow<String> = MutableStateFlow("")
+    val contextText = _contextText.asStateFlow()
 
-  private val _sentences: MutableStateFlow<HashMap<String, String?>> = MutableStateFlow(HashMap())
-  val sentences = _sentences.asStateFlow()
+    private val _sentences: MutableStateFlow<HashMap<String, String?>> = MutableStateFlow(HashMap())
+    val sentences = _sentences.asStateFlow()
 
-  override fun setupMicrotask() {
-    // TODO: Move to Gson
-    val contextText = currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("prompt").asString
-    _contextText.value = contextText
+    override fun setupMicrotask() {
+        // TODO: Move to Gson
+        val contextText = currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("prompt").asString
+        _contextText.value = contextText
 
-    // Get sentence list
-    val sentencesJsonObject = currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("sentences").asJsonObject
+        // Get sentence list
+        val sentencesJsonObject = currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("sentences").asJsonObject
 
-    val sentences = HashMap<String, String?>()
-    for(ele in sentencesJsonObject.entrySet()) {
-      sentences[ele.key] = ele.value.asJsonObject.get("status").asString
-    }
-    _sentences.value = sentences
-  }
-
-  /** Handle next button click */
-  fun handleNextClick() {
-
-    /** Log button press */
-    val message = JsonObject()
-    message.addProperty("type", "o")
-    message.addProperty("button", "NEXT")
-    log(message)
-
-    val sentences = JsonObject()
-
-    for (entry in _sentences.value) {
-      val sentence = entry.key
-      val status = entry.value
-      val statusObject = JsonObject()
-      statusObject.addProperty("status", status)
-      sentences.add(sentence, statusObject)
+        val sentences = HashMap<String, String?>()
+        for (ele in sentencesJsonObject.entrySet()) {
+            sentences[ele.key] = ele.value.asJsonObject.get("status").asString
+        }
+        _sentences.value = sentences
     }
 
-    outputData.add("sentences", sentences)
+    /** Handle next button click */
+    fun handleNextClick() {
 
-    viewModelScope.launch {
-      completeAndSaveCurrentMicrotask()
-      moveToNextMicrotask()
+        /** Log button press */
+        val message = JsonObject()
+        message.addProperty("type", "o")
+        message.addProperty("button", "NEXT")
+        log(message)
+
+        val sentences = JsonObject()
+
+        for (entry in _sentences.value) {
+            val sentence = entry.key
+            val status = entry.value
+            val statusObject = JsonObject()
+            statusObject.addProperty("status", status)
+            sentences.add(sentence, statusObject)
+        }
+
+        outputData.add("sentences", sentences)
+
+        viewModelScope.launch {
+            completeAndSaveCurrentMicrotask()
+            moveToNextMicrotask()
+        }
     }
-  }
-
 }

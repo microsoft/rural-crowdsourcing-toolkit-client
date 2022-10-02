@@ -78,8 +78,10 @@ class FaceDetector(private val faceBoundsOverlay: FaceBoundsOverlay) {
                 isProcessing = true
                 if (!::faceDetectionExecutor.isInitialized) {
                     val exception =
-                        IllegalStateException("Cannot run face detection. Make sure the face " +
-                                "bounds overlay is attached to the current window.")
+                        IllegalStateException(
+                            "Cannot run face detection. Make sure the face " +
+                                "bounds overlay is attached to the current window."
+                        )
                     onError(exception)
                 } else {
                     faceDetectionExecutor.execute { frame.detectFaces() }

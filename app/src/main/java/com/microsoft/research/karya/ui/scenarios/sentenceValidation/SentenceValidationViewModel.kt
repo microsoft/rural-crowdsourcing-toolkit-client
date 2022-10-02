@@ -19,45 +19,44 @@ import javax.inject.Inject
 class SentenceValidationViewModel
 @Inject
 constructor(
-  assignmentRepository: AssignmentRepository,
-  taskRepository: TaskRepository,
-  microTaskRepository: MicroTaskRepository,
-  @FilesDir fileDirPath: String,
-  authManager: AuthManager,
-  dataStore: DataStore<Preferences>
-): BaseMTRendererViewModel(
-  assignmentRepository,
-  taskRepository,
-  microTaskRepository,
-  fileDirPath,
-  authManager,
-  dataStore
-)
-{
-  // UI elements controlled by the view model
+    assignmentRepository: AssignmentRepository,
+    taskRepository: TaskRepository,
+    microTaskRepository: MicroTaskRepository,
+    @FilesDir fileDirPath: String,
+    authManager: AuthManager,
+    dataStore: DataStore<Preferences>
+) : BaseMTRendererViewModel(
+    assignmentRepository,
+    taskRepository,
+    microTaskRepository,
+    fileDirPath,
+    authManager,
+    dataStore
+) {
+    // UI elements controlled by the view model
 
-  // Sentence
-  private val _sentence: MutableStateFlow<String> = MutableStateFlow("")
-  val sentence = _sentence.asStateFlow()
+    // Sentence
+    private val _sentence: MutableStateFlow<String> = MutableStateFlow("")
+    val sentence = _sentence.asStateFlow()
 
-  /**
-   * Setup sentence validation microtask
-   */
-  override fun setupMicrotask() {
-    val inputData = currentMicroTask.input.asJsonObject.getAsJsonObject("data")
-    _sentence.value = inputData.get("sentence").asString
-  }
-
-  /**
-   * Submit response
-   */
-  fun submitResponse(grammar: Boolean, spelling: Boolean) {
-    outputData.addProperty("grammar", grammar)
-    outputData.addProperty("spelling", spelling)
-
-    viewModelScope.launch {
-      completeAndSaveCurrentMicrotask()
-      moveToNextMicrotask()
+    /**
+     * Setup sentence validation microtask
+     */
+    override fun setupMicrotask() {
+        val inputData = currentMicroTask.input.asJsonObject.getAsJsonObject("data")
+        _sentence.value = inputData.get("sentence").asString
     }
-  }
+
+    /**
+     * Submit response
+     */
+    fun submitResponse(grammar: Boolean, spelling: Boolean) {
+        outputData.addProperty("grammar", grammar)
+        outputData.addProperty("spelling", spelling)
+
+        viewModelScope.launch {
+            completeAndSaveCurrentMicrotask()
+            moveToNextMicrotask()
+        }
+    }
 }

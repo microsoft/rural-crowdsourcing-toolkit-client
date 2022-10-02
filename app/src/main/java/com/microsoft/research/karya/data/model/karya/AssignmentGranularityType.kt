@@ -5,7 +5,7 @@
 package com.microsoft.research.karya.data.model.karya
 
 enum class AssignmentGranularityType {
-  GROUP,
-  MICROTASK,
-  EITHER
+    GROUP,
+    MICROTASK,
+    EITHER
 }

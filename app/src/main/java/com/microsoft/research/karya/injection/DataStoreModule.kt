@@ -15,9 +15,9 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 class DataStoreModule {
 
-  @Provides
-  @Reusable
-  fun dataStore(@ApplicationContext context: Context): DataStore<Preferences> {
-    return context.dataStore
-  }
+    @Provides
+    @Reusable
+    fun dataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+        return context.dataStore
+    }
 }
