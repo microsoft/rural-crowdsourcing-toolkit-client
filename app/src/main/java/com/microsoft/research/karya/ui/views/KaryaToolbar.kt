@@ -14,6 +14,7 @@ import com.microsoft.research.karya.R
 import com.microsoft.research.karya.data.model.karya.enums.LanguageType
 import com.microsoft.research.karya.databinding.AppToolbarBinding
 import com.microsoft.research.karya.utils.extensions.gone
+import com.microsoft.research.karya.utils.extensions.invisible
 import com.microsoft.research.karya.utils.extensions.visible
 
 class KaryaToolbar : Toolbar {
@@ -85,6 +86,15 @@ class KaryaToolbar : Toolbar {
             visible()
         }
     }
+
+    fun setBackBtnClickListener(onClick: OnClickListener) {
+        binding.toolbarBackBtn.apply {
+            visible() // doesn't makes sense to set click-listener on an invisible view
+            setOnClickListener(onClick)
+        }
+    }
+
+    fun hideBackButton(): Unit = binding.toolbarBackBtn.invisible()
 
     fun setProfileClickListener(onClick: () -> Unit) {
         binding.profilePictureIv.apply {
