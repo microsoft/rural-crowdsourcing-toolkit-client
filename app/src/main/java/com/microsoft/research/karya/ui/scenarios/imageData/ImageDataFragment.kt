@@ -8,22 +8,16 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.microsoft.research.karya.R
+import com.microsoft.research.karya.databinding.MicrotaskImageDataBinding
 import com.microsoft.research.karya.ui.scenarios.common.BaseMTRendererFragment
 import com.microsoft.research.karya.utils.ImageUtils.bitmapFromFile
-import com.microsoft.research.karya.utils.extensions.disable
-import com.microsoft.research.karya.utils.extensions.enable
-import com.microsoft.research.karya.utils.extensions.invisible
-import com.microsoft.research.karya.utils.extensions.observe
-import com.microsoft.research.karya.utils.extensions.viewLifecycleScope
-import com.microsoft.research.karya.utils.extensions.visible
+import com.microsoft.research.karya.utils.extensions.*
 import com.otaliastudios.cameraview.CameraListener
 import com.otaliastudios.cameraview.CameraOptions
 import com.otaliastudios.cameraview.PictureResult
 import com.otaliastudios.cameraview.gesture.Gesture
 import com.otaliastudios.cameraview.gesture.GestureAction
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.microtask_common_next_button.view.*
-import kotlinx.android.synthetic.main.microtask_image_data.*
 import java.io.File
 import kotlin.math.max
 
@@ -31,6 +25,8 @@ import kotlin.math.max
 class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) {
     override val viewModel: ImageDataViewModel by viewModels()
     private val args: ImageDataFragmentArgs by navArgs()
+
+    private val binding by viewBinding(MicrotaskImageDataBinding::bind)
 
     private var localImageState: MutableList<Boolean> = mutableListOf()
     private var currentImageIndex: Int = 0
@@ -49,8 +45,10 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        cameraCv.pictureMetering = false
-        cameraCv.mapGesture(Gesture.TAP, GestureAction.AUTO_FOCUS)
+        with(binding.cameraCv) {
+            pictureMetering = false
+            mapGesture(Gesture.TAP, GestureAction.AUTO_FOCUS)
+        }
 
         setupObservers()
         setupListeners()
@@ -70,7 +68,7 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
             }
 
             val instruction = getString(R.string.image_data_collection_instruction).replace("#", (count - 1).toString())
-            instructionTv.text = instruction
+            binding.instructionTv.text = instruction
 
             // Reinitialize state
             resetAdapter()
@@ -79,7 +77,7 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
         }
     }
 
-    private fun setupListeners() {
+    private fun setupListeners() = with(binding) {
         // Camera event listeners
         cameraCv.addCameraListener(object : CameraListener() {
             // When camera is opened, make capture view visible
@@ -91,7 +89,7 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
             // Enable start capture button, after camera is closed
             override fun onCameraClosed() {
                 super.onCameraClosed()
-                startCaptureBtn.enable()
+                startCaptureBtn.root.enable()
                 recaptureBtn.enable()
             }
 
@@ -122,10 +120,10 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
         })
 
         // When the capture button is clicked
-        startCaptureBtn.setOnClickListener {
+        startCaptureBtn.root.setOnClickListener {
             val index = localImageState.indexOf(false)
             currentImageIndex = max(index, 0)
-            startCaptureBtn.disable()
+            startCaptureBtn.root.disable()
             recaptureBtn.disable()
             cameraCv.open()
         }
@@ -141,7 +139,7 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
             switchToGridView()
         }
 
-        nextBtnCv.setOnClickListener {
+        nextBtnCv.root.setOnClickListener {
             viewModel.completeDataCollection(localImageState)
         }
 
@@ -151,7 +149,7 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
 
         recaptureBtn.setOnClickListener {
             recaptureBtn.disable()
-            startCaptureBtn.disable()
+            startCaptureBtn.root.disable()
             cameraCv.open()
         }
 
@@ -173,21 +171,21 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
             }
         }
 
-        backBtn.setOnClickListener { }
+        backBtn.root.setOnClickListener { }
     }
 
-    private fun updateNavigationState() {
+    private fun updateNavigationState() = with(binding) {
         val complete = localImageState.all { it }
         if (complete) {
-            nextBtnCv.isClickable = true
+            nextBtnCv.root.isClickable = true
             nextBtnCv.nextIv.setBackgroundResource(R.drawable.ic_next_enabled)
         } else {
-            nextBtnCv.isClickable = false
+            nextBtnCv.root.isClickable = false
             nextBtnCv.nextIv.setBackgroundResource(R.drawable.ic_next_disabled)
         }
     }
 
-    private fun switchToGridView() {
+    private fun switchToGridView() = with(binding) {
         updateNavigationState()
         imageDataCaptureView.invisible()
         fullImageDisplayView.invisible()
@@ -195,7 +193,7 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
         cameraCv.close()
     }
 
-    private fun switchToCaptureView() {
+    private fun switchToCaptureView() = with(binding) {
         imageDataGridView.invisible()
         fullImageDisplayView.invisible()
         imageDataCaptureView.visible()
@@ -203,7 +201,7 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
         imageLabelTv.text = label
     }
 
-    private fun switchToFullImageDisplayView() {
+    private fun switchToFullImageDisplayView() = with(binding) {
         imageDataCaptureView.invisible()
         imageDataGridView.invisible()
         fullImageDisplayView.visible()
@@ -220,7 +218,7 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
             switchToGridView()
         } else {
             val label = if (currentImageIndex == 0) "Front Cover" else "Picture $currentImageIndex"
-            imageLabelTv.text = label
+            binding.imageLabelTv.text = label
         }
     }
 
@@ -235,7 +233,7 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
         imageListAdapter = ImageListAdapter(requireContext(), pathList) { index ->
             handleGridImageClick(index)
         }
-        imagesGv.adapter = imageListAdapter
+        binding.imagesGv.adapter = imageListAdapter
     }
 
     private fun updateAdapter(index: Int) {
@@ -246,18 +244,18 @@ class ImageDataFragment : BaseMTRendererFragment(R.layout.microtask_image_data) 
         imageListAdapter.updateItem(index, path)
     }
 
-    private fun handleGridImageClick(index: Int) {
+    private fun handleGridImageClick(index: Int) = with(binding) {
         currentImageIndex = index
         if (localImageState[index]) {
             switchToFullImageDisplayView()
         } else {
             recaptureBtn.disable()
-            startCaptureBtn.disable()
+            startCaptureBtn.root.disable()
             cameraCv.open()
         }
     }
 
-    private fun updateFullImageView() {
+    private fun updateFullImageView() = with(binding) {
         // Text label
         val label = if (currentImageIndex == 0) "Front Cover" else "Picture $currentImageIndex"
         fullImageLabelTv.text = label
