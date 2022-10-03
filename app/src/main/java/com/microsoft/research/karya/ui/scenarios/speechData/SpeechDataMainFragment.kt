@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.microsoft.research.karya.R
 import com.microsoft.research.karya.data.model.karya.enums.AssistantAudio
+import com.microsoft.research.karya.databinding.MicrotaskSpeechDataBinding
 import com.microsoft.research.karya.ui.scenarios.common.BaseMTRendererFragment
 import com.microsoft.research.karya.ui.scenarios.speechData.SpeechDataMainViewModel.ButtonState.*
 import com.microsoft.research.karya.utils.extensions.*
@@ -20,9 +21,6 @@ import com.microsoft.research.karya.utils.spotlight.TargetData
 import com.takusemba.spotlight.shape.Circle
 import com.takusemba.spotlight.shape.RoundedRectangle
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.microtask_common_back_button.view.*
-import kotlinx.android.synthetic.main.microtask_common_next_button.view.*
-import kotlinx.android.synthetic.main.microtask_speech_data.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -34,6 +32,8 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
     override fun requiredPermissions(): Array<String> {
         return arrayOf(android.Manifest.permission.RECORD_AUDIO)
     }
+
+    private val binding by viewBinding(MicrotaskSpeechDataBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,17 +61,19 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
         val recordInstruction =
             viewModel.task.params.asJsonObject.get("instruction").asString
                 ?: getString(R.string.speech_recording_instruction)
-        instructionTv.text = recordInstruction
+        with(binding) {
+            instructionTv.text = recordInstruction
 
-        /** Set on click listeners */
-        recordBtn.setOnClickListener { viewModel.handleRecordClick() }
-        playBtn.setOnClickListener { viewModel.handlePlayClick() }
-        nextBtnCv.setOnClickListener { viewModel.handleNextClick() }
-        backBtn.setOnClickListener { viewModel.handleBackClick() }
-        hintAudioBtn.setOnClickListener { viewModel.handleHintAudioBtnClick() }
+            /** Set on click listeners */
+            recordBtn.setOnClickListener { viewModel.handleRecordClick() }
+            playBtn.setOnClickListener { viewModel.handlePlayClick() }
+            nextBtnCv.root.setOnClickListener { viewModel.handleNextClick() }
+            backBtn.root.setOnClickListener { viewModel.handleBackClick() }
+            hintAudioBtn.setOnClickListener { viewModel.handleHintAudioBtnClick() }
+        }
     }
 
-    private fun setupSpotLight() {
+    private fun setupSpotLight() = with(binding) {
 
         val spotlightPadding = 20
 
@@ -141,8 +143,8 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
 
         targetsDataList.add(
             TargetData(
-                nextBtnCv,
-                Circle(((nextBtnCv.height + spotlightPadding) / 2).toFloat()),
+                nextBtnCv.root,
+                Circle(((nextBtnCv.root.height + spotlightPadding) / 2).toFloat()),
                 R.layout.spotlight_target_temp,
                 AssistantAudio.NEXT_ACTION,
                 uiCue = {
@@ -156,8 +158,8 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
 
         targetsDataList.add(
             TargetData(
-                backBtn,
-                Circle(((backBtn.height + spotlightPadding) / 2).toFloat()),
+                backBtn.root,
+                Circle(((backBtn.root.height + spotlightPadding) / 2).toFloat()),
                 R.layout.spotlight_target_temp,
                 AssistantAudio.PREVIOUS_ACTION,
                 uiCue = {
@@ -169,16 +171,16 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
             )
         )
 
-        val builderWrapper = SpotlightBuilderWrapper(this, targetsDataList, onCompletionListener = {
+        val builderWrapper = SpotlightBuilderWrapper(this@SpeechDataMainFragment, targetsDataList, onCompletionListener = {
             viewModel.moveToPrerecording()
         })
 
         builderWrapper.start()
     }
 
-    private fun setupObservers() {
+    private fun setupObservers() = with(binding) {
         viewModel.backBtnState.observe(viewLifecycleOwner.lifecycle, viewLifecycleScope) { state ->
-            backBtn.isClickable = state != DISABLED
+            backBtn.root.isClickable = state != DISABLED
             backBtn.backIv.setBackgroundResource(
                 when (state) {
                     DISABLED -> R.drawable.ic_back_disabled
@@ -211,7 +213,7 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
         }
 
         viewModel.nextBtnState.observe(viewLifecycleOwner.lifecycle, viewLifecycleScope) { state ->
-            nextBtnCv.isClickable = state != DISABLED
+            nextBtnCv.root.isClickable = state != DISABLED
             nextBtnCv.nextIv.setBackgroundResource(
                 when (state) {
                     DISABLED -> R.drawable.ic_next_disabled
@@ -310,7 +312,7 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
         }
     }
 
-    private fun playRecordPrompt() {
+    private fun playRecordPrompt() = with(binding) {
         val oldColor = sentenceTv.currentTextColor
 
         assistant.playAssistantAudio(
@@ -335,7 +337,7 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
         )
     }
 
-    private fun playRecordAction() {
+    private fun playRecordAction() = with(binding) {
 
         lifecycleScope.launch {
             assistant.playAssistantAudio(
@@ -362,7 +364,7 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
         }
     }
 
-    private fun playStopAction() {
+    private fun playStopAction() = with(binding) {
 
         lifecycleScope.launch {
             assistant.playAssistantAudio(
@@ -386,7 +388,7 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
         }
     }
 
-    private fun playListenAction() {
+    private fun playListenAction() = with(binding) {
 
         assistant.playAssistantAudio(
             AssistantAudio.LISTEN_ACTION,
@@ -410,7 +412,7 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
         )
     }
 
-    private fun playRerecordAction() {
+    private fun playRerecordAction() = with(binding) {
 
         assistant.playAssistantAudio(
             AssistantAudio.RERECORD_ACTION,
@@ -434,7 +436,7 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
         )
     }
 
-    private fun playNextAction() {
+    private fun playNextAction() = with(binding) {
 
         assistant.playAssistantAudio(
             AssistantAudio.NEXT_ACTION,
@@ -458,7 +460,7 @@ class SpeechDataMainFragment : BaseMTRendererFragment(R.layout.microtask_speech_
         )
     }
 
-    private fun playPreviousAction() {
+    private fun playPreviousAction() = with(binding) {
 
         assistant.playAssistantAudio(
             AssistantAudio.PREVIOUS_ACTION,
