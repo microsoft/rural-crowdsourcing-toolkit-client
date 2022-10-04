@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -33,6 +35,10 @@ android {
                     "proguard-rules.pro"
                 )
             )
+            buildConfigField("String", "BOX_URL", "http://__deployed_box_url")
+        }
+        named("debug") {
+            buildConfigField("String", "BOX_URL", "\"${gradleLocalProperties(project.rootDir).getProperty("LOCAL_BOX_URL")}\"")
         }
     }
     compileOptions {
