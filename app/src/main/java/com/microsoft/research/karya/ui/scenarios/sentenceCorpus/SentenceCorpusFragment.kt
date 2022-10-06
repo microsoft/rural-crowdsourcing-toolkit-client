@@ -11,20 +11,15 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.microsoft.research.karya.R
 import com.microsoft.research.karya.data.model.karya.enums.AssistantAudio
+import com.microsoft.research.karya.databinding.MicrotaskSentenceCorpusBinding
 import com.microsoft.research.karya.ui.scenarios.common.BaseMTRendererFragment
 import com.microsoft.research.karya.ui.scenarios.transliteration.validator.Validator
-import com.microsoft.research.karya.utils.extensions.gone
-import com.microsoft.research.karya.utils.extensions.observe
-import com.microsoft.research.karya.utils.extensions.viewLifecycleScope
-import com.microsoft.research.karya.utils.extensions.visible
+import com.microsoft.research.karya.utils.extensions.*
 import com.microsoft.research.karya.utils.spotlight.SpotlightBuilderWrapper
 import com.microsoft.research.karya.utils.spotlight.TargetData
 import com.takusemba.spotlight.shape.Circle
 import com.takusemba.spotlight.shape.RoundedRectangle
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.microtask_sentence_corpus.*
-import kotlinx.android.synthetic.main.microtask_sentence_corpus.instructionTv
-import kotlinx.android.synthetic.main.microtask_sentence_corpus.nextBtn
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.ArrayList
@@ -34,6 +29,7 @@ class SentenceCorpusFragment :
     BaseMTRendererFragment(R.layout.microtask_sentence_corpus) {
     override val viewModel: SentenceCorpusViewModel by viewModels()
     val args: SentenceCorpusFragmentArgs by navArgs()
+    private val binding by viewBinding(MicrotaskSentenceCorpusBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,20 +50,22 @@ class SentenceCorpusFragment :
         /** instruction */
         val instruction =
             viewModel.task.params.asJsonObject.get("instruction").asString ?: ""
-        instructionTv.text = instruction
+        with(binding) {
+            instructionTv.text = instruction
 
-        addBtn.setOnClickListener { addSentence() }
+            addBtn.setOnClickListener { addSentence() }
 
-        sentenceEt.onSubmit { addSentence() }
+            sentenceEt.onSubmit { addSentence() }
 
-        nextBtn.setOnClickListener { onNextClick() }
+            nextBtn.setOnClickListener { onNextClick() }
 
-        backBtn.setOnClickListener { viewModel.handleBackClick() }
+            backBtn.setOnClickListener { viewModel.handleBackClick() }
+        }
 
         Validator.init()
     }
 
-    private fun addSentence() {
+    private fun addSentence() = with(binding) {
 
         errorTv.gone() // Remove any existing errors
 
@@ -93,12 +91,12 @@ class SentenceCorpusFragment :
         sentenceEt.text.clear()
     }
 
-    private fun showError(error: String) {
+    private fun showError(error: String) = with(binding) {
         errorTv.text = error
         errorTv.visible()
     }
 
-    private fun onNextClick() {
+    private fun onNextClick() = with(binding) {
         val sentences = viewModel.sentences.value
         if (sentences.size == 0) {
             skipTask(true, "", getString(R.string.skip_task_warning))
@@ -109,7 +107,7 @@ class SentenceCorpusFragment :
         sentenceEt.text.clear()
     }
 
-    private fun setupObservers() {
+    private fun setupObservers() = with(binding) {
         viewModel.contextText.observe(
             viewLifecycleOwner.lifecycle,
             viewLifecycleScope
@@ -162,7 +160,7 @@ class SentenceCorpusFragment :
         }
     }
 
-    private fun setupSpotLight() {
+    private fun setupSpotLight() = with(binding) {
 
         val spotlightPadding = 20
 
@@ -212,7 +210,7 @@ class SentenceCorpusFragment :
             )
         )
 
-        val builderWrapper = SpotlightBuilderWrapper(this, targetsDataList)
+        val builderWrapper = SpotlightBuilderWrapper(this@SentenceCorpusFragment, targetsDataList)
 
         builderWrapper.start()
     }
