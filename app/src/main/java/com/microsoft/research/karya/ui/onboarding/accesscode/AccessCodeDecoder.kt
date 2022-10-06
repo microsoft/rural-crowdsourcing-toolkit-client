@@ -1,6 +1,7 @@
 package com.microsoft.research.karya.ui.onboarding.accesscode
 
 import android.content.Context
+import com.microsoft.research.karya.BuildConfig
 import com.microsoft.research.karya.data.exceptions.InvalidAccessCodeException
 import org.json.JSONObject
 import kotlin.properties.Delegates
@@ -17,7 +18,7 @@ private const val PROD = 1
 private const val DIRECT_MAP = 0
 private const val TEMPLATE = 1
 
-private const val DEFAULT_URL: String = "http://10.0.2.2:8000"
+private const val DEFAULT_URL: String = BuildConfig.BOX_URL
 private const val PHYSICAL_BOX_URL: String = "http://localhost:8000"
 private const val DEV_URL: String = "http://localhost:8000"
 
