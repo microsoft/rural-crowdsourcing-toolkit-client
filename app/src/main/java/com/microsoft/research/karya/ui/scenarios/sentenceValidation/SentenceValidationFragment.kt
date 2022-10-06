@@ -7,16 +7,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.microsoft.research.karya.R
+import com.microsoft.research.karya.databinding.MicrotaskSentenceValidationBinding
 import com.microsoft.research.karya.ui.scenarios.common.BaseMTRendererFragment
 import com.microsoft.research.karya.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.microtask_common_next_button.view.*
-import kotlinx.android.synthetic.main.microtask_sentence_validation.*
 
 @AndroidEntryPoint
 class SentenceValidationFragment : BaseMTRendererFragment(R.layout.microtask_sentence_validation) {
     override val viewModel: SentenceValidationViewModel by viewModels()
     private val args: SentenceValidationFragmentArgs by navArgs()
+
+    private val binding by viewBinding(MicrotaskSentenceValidationBinding::bind)
 
     private var grammarValid: Boolean? = null
     private var spellingValid: Boolean? = null
@@ -35,11 +36,13 @@ class SentenceValidationFragment : BaseMTRendererFragment(R.layout.microtask_sen
         super.onViewCreated(view, savedInstanceState)
 
         // Get and set instruction
-        try {
-            val instruction = viewModel.task.params.asJsonObject.get("instruction").asString
-            instructionTv.text = instruction
-        } catch (e: Exception) {
-            instructionTv.gone()
+        with(binding) {
+            try {
+                val instruction = viewModel.task.params.asJsonObject.get("instruction").asString
+                instructionTv.text = instruction
+            } catch (e: Exception) {
+                instructionTv.gone()
+            }
         }
 
         // Setup observers
@@ -52,12 +55,12 @@ class SentenceValidationFragment : BaseMTRendererFragment(R.layout.microtask_sen
     private fun setupObservers() {
         // Sentence observer
         viewModel.sentence.observe(viewLifecycleOwner.lifecycle, viewLifecycleScope) { sentence ->
-            sentenceTv.text = sentence
+            binding.sentenceTv.text = sentence
             disableNextBtn()
         }
     }
 
-    private fun setupListeners() {
+    private fun setupListeners() = with(binding) {
         grammarGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
                 grammarValid = when (checkedId) {
@@ -80,7 +83,7 @@ class SentenceValidationFragment : BaseMTRendererFragment(R.layout.microtask_sen
             }
         }
 
-        nextBtn.setOnClickListener {
+        nextBtn.root.setOnClickListener {
             viewModel.submitResponse(grammarValid!!, spellingValid!!)
             grammarGroup.clearChecked()
             spellingGroup.clearChecked()
@@ -97,15 +100,15 @@ class SentenceValidationFragment : BaseMTRendererFragment(R.layout.microtask_sen
         }
     }
 
-    private fun enableNextBtn() {
-        nextBtn.isClickable = true
-        nextBtn.enable()
+    private fun enableNextBtn() = with(binding) {
+        nextBtn.root.isClickable = true
+        nextBtn.root.enable()
         nextBtn.nextIv.setBackgroundResource(R.drawable.ic_next_enabled)
     }
 
-    private fun disableNextBtn() {
-        nextBtn.isClickable = false
-        nextBtn.disable()
+    private fun disableNextBtn() = with(binding) {
+        nextBtn.root.isClickable = false
+        nextBtn.root.disable()
         nextBtn.nextIv.setBackgroundResource(R.drawable.ic_next_disabled)
     }
 }
