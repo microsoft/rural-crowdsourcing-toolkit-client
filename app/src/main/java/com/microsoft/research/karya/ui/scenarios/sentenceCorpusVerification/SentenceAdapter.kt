@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.microsoft.research.karya.R
-import kotlinx.android.synthetic.main.microtask_image_annotation_verification_fragment.*
 
 class SentenceAdapter(private val dataSet: ArrayList<String>, private val onScoreToggleGroupButtonListener: OnScoreToggleGroupButtonListener) :
     RecyclerView.Adapter<SentenceAdapter.ViewHolder>() {
