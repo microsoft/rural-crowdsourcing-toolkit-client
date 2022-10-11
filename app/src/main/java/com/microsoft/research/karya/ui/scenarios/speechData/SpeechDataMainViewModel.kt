@@ -19,7 +19,6 @@ import com.microsoft.research.karya.ui.scenarios.common.BaseMTRendererViewModel
 import com.microsoft.research.karya.ui.scenarios.speechData.SpeechDataMainViewModel.ButtonState.*
 import com.microsoft.research.karya.utils.RawToAACEncoder
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.android.synthetic.main.microtask_speech_data.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

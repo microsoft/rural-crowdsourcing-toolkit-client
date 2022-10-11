@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-android-extensions")
     id("kotlin-kapt")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
@@ -49,9 +48,6 @@ android {
     }
     lintOptions {
         isAbortOnError = false
-    }
-    androidExtensions {
-        isExperimental = true
     }
     buildFeatures {
         dataBinding = true
