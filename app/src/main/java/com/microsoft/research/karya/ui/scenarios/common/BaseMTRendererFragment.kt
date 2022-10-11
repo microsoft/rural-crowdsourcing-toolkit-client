@@ -9,15 +9,16 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.microsoft.research.karya.R
+import com.microsoft.research.karya.databinding.MicrotaskCommonHeaderBinding
 import com.microsoft.research.karya.ui.base.BaseFragment
 import com.microsoft.research.karya.utils.DateUtils
 import com.microsoft.research.karya.utils.extensions.observe
-import kotlinx.android.synthetic.main.microtask_common_header.*
 
 abstract class BaseMTRendererFragment(@LayoutRes contentLayoutId: Int) :
     BaseFragment(contentLayoutId) {
 
     abstract val viewModel: BaseMTRendererViewModel
+    private lateinit var microtaskCommonHeaderBinding: MicrotaskCommonHeaderBinding
 
     companion object {
         /** Code to request necessary permissions */
@@ -34,6 +35,7 @@ abstract class BaseMTRendererFragment(@LayoutRes contentLayoutId: Int) :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        microtaskCommonHeaderBinding = MicrotaskCommonHeaderBinding.inflate(layoutInflater)
         setUpObservers()
         /** Check if there are any permissions needed */
         val permissions = requiredPermissions()
@@ -78,7 +80,7 @@ abstract class BaseMTRendererFragment(@LayoutRes contentLayoutId: Int) :
         viewModel.getAndSetupMicrotask()
     }
 
-    private fun setUpObservers() {
+    private fun setUpObservers() = with(microtaskCommonHeaderBinding) {
         viewModel.completedAssignments.observe(viewLifecycleOwner.lifecycle, lifecycleScope) { completed ->
             microtaskProgressPb.progress = completed
         }
