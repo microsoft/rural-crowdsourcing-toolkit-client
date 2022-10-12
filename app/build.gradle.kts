@@ -3,20 +3,22 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-kapt")
+    // id("kotlin-kapt")
+    kotlin("kapt")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
-    id("dagger.hilt.android.plugin")
+    // id("dagger.hilt.android.plugin")
+    id("com.google.dagger.hilt.android")
     id("androidx.navigation.safeargs.kotlin")
     id("com.github.ben-manes.versions") version "0.38.0"
 }
 
 android {
-    compileSdkVersion(31)
+    compileSdk = 33
     defaultConfig {
         applicationId = "com.microsoft.research.karya"
-        minSdkVersion(24)
-        targetSdkVersion(30)
+        minSdk = 24
+        targetSdk = 33
         multiDexEnabled = true
         versionCode = 25
         versionName = "1"
@@ -41,19 +43,19 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
         kapt {
             arguments {
                 arg("room.schemaLocation", "$projectDir/schemas")
             }
         }
     }
-    lintOptions {
-        isAbortOnError = false
+    lint {
+        abortOnError = false
     }
     buildFeatures {
         dataBinding = true
@@ -113,6 +115,7 @@ dependencies {
     implementation(Dependencies.AndroidX.Lifecycle.livedataKtx)
     implementation(Dependencies.AndroidX.Lifecycle.runtimeKtx)
     implementation(Dependencies.AndroidX.Lifecycle.saved_state)
+    implementation(Dependencies.AndroidX.Lifecycle.viewModel)
     implementation(Dependencies.AndroidX.Lifecycle.viewModelKtx)
 
     implementation(Dependencies.AndroidX.Navigation.fragmentKtx)
@@ -133,11 +136,14 @@ dependencies {
     implementation(Dependencies.Google.Firebase.crashlytics)
     implementation(Dependencies.Google.Firebase.analytics)
 
-    implementation(Dependencies.AndroidX.Hilt.dagger)
-    implementation(Dependencies.AndroidX.Hilt.hiltNavigationFragment)
+//    implementation(Dependencies.AndroidX.Hilt.dagger)
+//    implementation(Dependencies.AndroidX.Hilt.hiltNavigationFragment)
+//
+//    kapt(Dependencies.AndroidX.Hilt.daggerCompiler)
+//    kapt(Dependencies.AndroidX.Hilt.daggerHiltCompiler)
 
-    kapt(Dependencies.AndroidX.Hilt.daggerCompiler)
-    kapt(Dependencies.AndroidX.Hilt.daggerHiltCompiler)
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
 
     implementation(Dependencies.Kotlin.Coroutines.core)
     implementation(Dependencies.Kotlin.Coroutines.coroutines)
@@ -183,3 +189,8 @@ dependencies {
     "largeImplementation" ("com.google.mlkit:face-detection:16.1.2")
     "largeImplementation" ("com.github.fishwjy:VideoCompressor:master-SNAPSHOT")
 }
+
+kapt {
+    correctErrorTypes = true
+}
+

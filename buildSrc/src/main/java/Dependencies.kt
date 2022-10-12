@@ -1,11 +1,11 @@
-private const val AGP_VERSION = "4.1.3"
+private const val AGP_VERSION = "7.3.0"
 private const val ANDROIDX_HILT_VERSION = "1.0.0-beta01"
 private const val CRASHLYTICS_VERSION = "2.5.2"
 private const val DAGGER_HILT_VERSION = "2.34.1-beta"
 private const val GMS_VERSION = "4.3.5"
 private const val KOTLIN_VERSION = "1.4.30"
 private const val LINT_VERSION = "27.3.0-alpha04"
-private const val NAVIGATION_VERSION = "2.3.5"
+private const val NAVIGATION_VERSION = "2.5.1"
 
 object Plugins {
 
@@ -56,12 +56,13 @@ object Dependencies {
     }
 
     object Lifecycle {
-      private const val version = "2.4.0-alpha01"
+      private const val version = "2.4.0"
       private const val extension_version = "2.2.0"
 
       const val common = "androidx.lifecycle:lifecycle-common-java8:$version"
       const val runtimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$version"
-      const val extensions = "androidx.lifecycle:lifecycle-extensions:$extension_version"
+      const val extensions = "androidx.lifecycle:lifecycle-extensions:$extension_version" // TODO: Replace, Deprecated
+      const val viewModel = "androidx.lifecycle:lifecycle-viewmodel:$version"
       const val viewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
       const val livedataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
       const val saved_state = "androidx.lifecycle:lifecycle-viewmodel-savedstate:$version"

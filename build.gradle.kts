@@ -18,7 +18,7 @@ buildscript {
 
     dependencies {
         classpath(Plugins.agp)
-        classpath(Plugins.hilt)
+        // classpath(Plugins.hilt)
         classpath(Plugins.kotlin)
         classpath(Plugins.gms)
         classpath(Plugins.crashlytics)
@@ -31,6 +31,7 @@ buildscript {
 
 plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+    id("com.google.dagger.hilt.android") version "2.44" apply false
 }
 
 apply {
