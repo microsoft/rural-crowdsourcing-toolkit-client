@@ -3,12 +3,10 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // id("kotlin-kapt")
     kotlin("kapt")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
-    // id("dagger.hilt.android.plugin")
-    id("com.google.dagger.hilt.android")
+    id(Plugin.Hilt.id) // version is picked up from parent i.e project'd root build.gradle
     id("androidx.navigation.safeargs.kotlin")
     id("com.github.ben-manes.versions") version "0.38.0"
 }
@@ -136,14 +134,8 @@ dependencies {
     implementation(Dependencies.Google.Firebase.crashlytics)
     implementation(Dependencies.Google.Firebase.analytics)
 
-//    implementation(Dependencies.AndroidX.Hilt.dagger)
-//    implementation(Dependencies.AndroidX.Hilt.hiltNavigationFragment)
-//
-//    kapt(Dependencies.AndroidX.Hilt.daggerCompiler)
-//    kapt(Dependencies.AndroidX.Hilt.daggerHiltCompiler)
-
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation(Dependencies.Google.Hilt.hiltAndroid)
+    kapt(Dependencies.Google.Hilt.hiltAndroidCompiler)
 
     implementation(Dependencies.Kotlin.Coroutines.core)
     implementation(Dependencies.Kotlin.Coroutines.coroutines)
@@ -193,4 +185,3 @@ dependencies {
 kapt {
     correctErrorTypes = true
 }
-

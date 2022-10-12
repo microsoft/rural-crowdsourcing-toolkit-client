@@ -85,7 +85,7 @@ constructor(
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-     fun pauseAssistant() {
+    fun pauseAssistant() {
         if (assistantPlayer.isPlaying) {
             assistantPlayer.pause()
         }
