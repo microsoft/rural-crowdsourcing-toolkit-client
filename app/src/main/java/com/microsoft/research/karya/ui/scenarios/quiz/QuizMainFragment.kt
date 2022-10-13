@@ -9,14 +9,10 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.microsoft.research.karya.R
+import com.microsoft.research.karya.databinding.MicrotaskQuizBinding
 import com.microsoft.research.karya.ui.scenarios.common.BaseMTRendererFragment
-import com.microsoft.research.karya.utils.extensions.gone
-import com.microsoft.research.karya.utils.extensions.invisible
-import com.microsoft.research.karya.utils.extensions.observe
-import com.microsoft.research.karya.utils.extensions.viewLifecycleScope
-import com.microsoft.research.karya.utils.extensions.visible
+import com.microsoft.research.karya.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.microtask_quiz.*
 import nl.bryanderidder.themedtogglebuttongroup.ThemedButton
 import com.intuit.ssp.R as ssp
 
@@ -24,6 +20,8 @@ import com.intuit.ssp.R as ssp
 class QuizMainFragment : BaseMTRendererFragment(R.layout.microtask_quiz) {
     override val viewModel: QuizViewModel by viewModels()
     private val args: QuizMainFragmentArgs by navArgs()
+
+    private val binding by viewBinding(MicrotaskQuizBinding::bind)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
@@ -36,11 +34,13 @@ class QuizMainFragment : BaseMTRendererFragment(R.layout.microtask_quiz) {
 
         // Get and set microtask instruction
         // If no instruction gone
-        try {
-            val instruction = viewModel.task.params.asJsonObject.get("instruction").asString
-            instructionTv.text = instruction
-        } catch (e: Exception) {
-            instructionTv.gone()
+        with(binding) {
+            try {
+                val instruction = viewModel.task.params.asJsonObject.get("instruction").asString
+                instructionTv.text = instruction
+            } catch (e: Exception) {
+                instructionTv.gone()
+            }
         }
 
         // Setup observers
@@ -50,7 +50,7 @@ class QuizMainFragment : BaseMTRendererFragment(R.layout.microtask_quiz) {
         setupListeners()
     }
 
-    private fun setupObservers() {
+    private fun setupObservers() = with(binding) {
         // Question has changed. Update the UI accordingly.
         viewModel.question.observe(viewLifecycleOwner.lifecycle, viewLifecycleScope) { question ->
             questionTv.text = question.question
@@ -89,8 +89,8 @@ class QuizMainFragment : BaseMTRendererFragment(R.layout.microtask_quiz) {
         }
     }
 
-    private fun setupListeners() {
-        nextBtn.setOnClickListener {
+    private fun setupListeners() = with(binding) {
+        nextBtn.root.setOnClickListener {
             viewModel.submitResponse()
             textResponseEt.setText("")
         }

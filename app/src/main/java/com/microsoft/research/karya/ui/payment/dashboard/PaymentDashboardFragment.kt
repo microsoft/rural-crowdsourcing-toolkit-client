@@ -9,7 +9,6 @@ import com.microsoft.research.karya.R
 import com.microsoft.research.karya.databinding.FragmentPaymentDashboardBinding
 import com.microsoft.research.karya.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.app_toolbar.view.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -25,8 +24,7 @@ class PaymentDashboardFragment : Fragment(R.layout.fragment_payment_dashboard) {
     }
 
     private fun setupListeners() {
-        binding.appTb.toolbarBackBtn.visible()
-        binding.appTb.toolbarBackBtn.setOnClickListener {
+        binding.appTb.setBackBtnClickListener {
             requireActivity().onBackPressed()
         }
 

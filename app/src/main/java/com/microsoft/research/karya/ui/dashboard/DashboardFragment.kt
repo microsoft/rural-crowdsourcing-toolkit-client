@@ -19,7 +19,6 @@ import com.microsoft.research.karya.databinding.FragmentDashboardBinding
 import com.microsoft.research.karya.ui.base.SessionFragment
 import com.microsoft.research.karya.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.app_toolbar.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -162,10 +161,7 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
     }
 
     private fun setupViews() {
-
-        toolbarBackBtn.visible()
-
-        toolbarBackBtn.setOnClickListener {
+        binding.appTb.setBackBtnClickListener {
             findNavController().popBackStack()
         }
 

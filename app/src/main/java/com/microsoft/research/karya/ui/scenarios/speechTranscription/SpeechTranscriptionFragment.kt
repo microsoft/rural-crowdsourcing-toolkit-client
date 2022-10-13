@@ -10,9 +10,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.microsoft.research.karya.R
 import com.microsoft.research.karya.data.model.karya.enums.AssistantAudio
+import com.microsoft.research.karya.databinding.MicrotaskSpeechTranscriptionBinding
 import com.microsoft.research.karya.ui.scenarios.common.BaseMTRendererFragment
 import com.microsoft.research.karya.ui.scenarios.speechTranscription.SpeechTranscriptionViewModel.ButtonState
 import com.microsoft.research.karya.utils.extensions.observe
+import com.microsoft.research.karya.utils.extensions.viewBinding
 import com.microsoft.research.karya.utils.extensions.viewLifecycleScope
 import com.microsoft.research.karya.utils.spotlight.SpotlightBuilderWrapper
 import com.microsoft.research.karya.utils.spotlight.TargetData
@@ -20,22 +22,17 @@ import com.potyvideo.library.globalInterfaces.AndExoPlayerListener
 import com.takusemba.spotlight.shape.Circle
 import com.takusemba.spotlight.shape.RoundedRectangle
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.microtask_common_back_button.view.*
-import kotlinx.android.synthetic.main.microtask_common_next_button.view.*
-import kotlinx.android.synthetic.main.microtask_common_playback_progress.view.*
-import kotlinx.android.synthetic.main.microtask_speech_transcription.*
-import kotlinx.android.synthetic.main.microtask_speech_transcription.backBtnCv
-import kotlinx.android.synthetic.main.microtask_speech_transcription.instructionTv
-import kotlinx.android.synthetic.main.microtask_speech_transcription.nextBtnCv
-import kotlinx.android.synthetic.main.microtask_speech_transcription.playBtn
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.ArrayList
 
 @AndroidEntryPoint
-class SpeechTranscriptionFragment : BaseMTRendererFragment(R.layout.microtask_speech_transcription) {
+class SpeechTranscriptionFragment :
+    BaseMTRendererFragment(R.layout.microtask_speech_transcription) {
     override val viewModel: SpeechTranscriptionViewModel by viewModels()
     val args: SpeechTranscriptionFragmentArgs by navArgs()
+
+    private val binding by viewBinding(MicrotaskSpeechTranscriptionBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,42 +53,47 @@ class SpeechTranscriptionFragment : BaseMTRendererFragment(R.layout.microtask_sp
         val recordInstruction =
             viewModel.task.params.asJsonObject.get("instruction").asString
                 ?: getString(R.string.speech_recording_instruction)
-        instructionTv.text = recordInstruction
 
-        /** Set on click listeners for buttons */
-        playBtn.setOnClickListener { viewModel.handlePlayClick() }
-        nextBtnCv.setOnClickListener {
-            // Check if user has entered the text
-            if (transcriptionEt.text.isNullOrEmpty()) {
-                skipTask(true, "", getString(R.string.skip_task_warning))
-                return@setOnClickListener
-            } else {
-                val alertDialogBuilder = AlertDialog.Builder(requireContext())
-                alertDialogBuilder.setTitle("Review the transcription.")
-                alertDialogBuilder.setMessage(transcriptionEt.text.toString())
-                alertDialogBuilder.setPositiveButton(R.string.yes) { _, _ ->
-                    viewModel.setTranscriptionText(transcriptionEt.text.toString())
-                    viewModel.handleNextClick()
-                    transcriptionEt.text.clear()
+        with(binding) {
+            instructionTv.text = recordInstruction
+
+            /** Set on click listeners for buttons */
+
+            /** Set on click listeners for buttons */
+            playBtn.setOnClickListener { viewModel.handlePlayClick() }
+            nextBtnCv.root.setOnClickListener {
+                // Check if user has entered the text
+                if (transcriptionEt.text.isNullOrEmpty()) {
+                    skipTask(true, "", getString(R.string.skip_task_warning))
+                    return@setOnClickListener
+                } else {
+                    val alertDialogBuilder = AlertDialog.Builder(requireContext())
+                    alertDialogBuilder.setTitle("Review the transcription.")
+                    alertDialogBuilder.setMessage(transcriptionEt.text.toString())
+                    alertDialogBuilder.setPositiveButton(R.string.yes) { _, _ ->
+                        viewModel.setTranscriptionText(transcriptionEt.text.toString())
+                        viewModel.handleNextClick()
+                        transcriptionEt.text.clear()
+                    }
+                    alertDialogBuilder.setNegativeButton(R.string.no) { _, _ -> }
+                    val alertDialog = alertDialogBuilder.create()
+                    alertDialog.setCancelable(true)
+                    alertDialog.setCanceledOnTouchOutside(true)
+                    alertDialog.show()
                 }
-                alertDialogBuilder.setNegativeButton(R.string.no) { _, _ -> }
-                val alertDialog = alertDialogBuilder.create()
-                alertDialog.setCancelable(true)
-                alertDialog.setCanceledOnTouchOutside(true)
-                alertDialog.show()
             }
+
+            backBtnCv.root.setOnClickListener { viewModel.handleBackClick() }
+
+            audioPlayer.setAndExoPlayerListener(object : AndExoPlayerListener {
+                override fun onExoPlayerError(errorMessage: String?) {
+                    viewModel.handleCorruptAudio(errorMessage)
+                }
+            })
         }
-
-        backBtnCv.setOnClickListener { viewModel.handleBackClick() }
-
-        audioPlayer.setAndExoPlayerListener(object : AndExoPlayerListener {
-            override fun onExoPlayerError(errorMessage: String?) {
-                viewModel.handleCorruptAudio(errorMessage)
-            }
-        })
     }
 
-    private fun setupObservers() {
+    private fun setupObservers() = with(binding) {
         viewModel.assistWords.observe(
             viewLifecycleOwner.lifecycle, viewLifecycleScope
         ) { words ->
@@ -203,10 +205,10 @@ class SpeechTranscriptionFragment : BaseMTRendererFragment(R.layout.microtask_sp
         backBtnState: ButtonState,
         playBtnState: ButtonState,
         nextBtnState: ButtonState
-    ) {
+    ) = with(binding) {
         playBtn.isClickable = playBtnState != ButtonState.DISABLED
-        backBtnCv.isClickable = backBtnState != ButtonState.DISABLED
-        nextBtnCv.isClickable = nextBtnState != ButtonState.DISABLED
+        backBtnCv.root.isClickable = backBtnState != ButtonState.DISABLED
+        nextBtnCv.root.isClickable = nextBtnState != ButtonState.DISABLED
 
         playBtn.setBackgroundResource(
             when (playBtnState) {
@@ -232,7 +234,8 @@ class SpeechTranscriptionFragment : BaseMTRendererFragment(R.layout.microtask_sp
             }
         )
     }
-    private fun setupSpotLight() {
+
+    private fun setupSpotLight() = with(binding) {
 
         val spotlightPadding = 20
 
@@ -266,8 +269,8 @@ class SpeechTranscriptionFragment : BaseMTRendererFragment(R.layout.microtask_sp
 
         targetsDataList.add(
             TargetData(
-                nextBtnCv,
-                Circle(((nextBtnCv.height + spotlightPadding) / 2).toFloat()),
+                nextBtnCv.root,
+                Circle(((nextBtnCv.root.height + spotlightPadding) / 2).toFloat()),
                 R.layout.spotlight_target_temp,
                 AssistantAudio.SPEECH_TRANSCRIPTION_NEXT_BUTTON,
             )
@@ -275,14 +278,14 @@ class SpeechTranscriptionFragment : BaseMTRendererFragment(R.layout.microtask_sp
 
         targetsDataList.add(
             TargetData(
-                backBtnCv,
-                Circle(((backBtnCv.height + spotlightPadding) / 2).toFloat()),
+                backBtnCv.root,
+                Circle(((backBtnCv.root.height + spotlightPadding) / 2).toFloat()),
                 R.layout.spotlight_target_temp,
                 AssistantAudio.SPEECH_TRANSCRIPTION_BACK_BUTTON,
             )
         )
 
-        val builderWrapper = SpotlightBuilderWrapper(this, targetsDataList)
+        val builderWrapper = SpotlightBuilderWrapper(this@SpeechTranscriptionFragment, targetsDataList)
 
         builderWrapper.start()
     }

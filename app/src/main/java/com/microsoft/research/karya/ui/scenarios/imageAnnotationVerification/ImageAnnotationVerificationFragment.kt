@@ -15,11 +15,12 @@ import androidx.navigation.fragment.navArgs
 import com.jsibbold.zoomage.dataClass.Polygon
 import com.jsibbold.zoomage.enums.CropObjectStatus
 import com.microsoft.research.karya.R
+import com.microsoft.research.karya.databinding.MicrotaskImageAnnotationVerificationFragmentBinding
 import com.microsoft.research.karya.ui.scenarios.common.BaseMTRendererFragment
 import com.microsoft.research.karya.utils.extensions.observe
+import com.microsoft.research.karya.utils.extensions.viewBinding
 import com.microsoft.research.karya.utils.extensions.viewLifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.microtask_image_annotation_verification_fragment.*
 
 @AndroidEntryPoint
 class ImageAnnotationVerificationFragment : BaseMTRendererFragment(R.layout.microtask_image_annotation_verification_fragment) {
@@ -27,6 +28,8 @@ class ImageAnnotationVerificationFragment : BaseMTRendererFragment(R.layout.micr
     private val args: ImageAnnotationVerificationFragmentArgs by navArgs()
     private var rectangleCropCoors: HashMap<String, RectF>? = null
     private var polygonCropCoors: HashMap<String, Polygon>? = null
+
+    private val binding by viewBinding(MicrotaskImageAnnotationVerificationFragmentBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,27 +51,29 @@ class ImageAnnotationVerificationFragment : BaseMTRendererFragment(R.layout.micr
         } catch (e: Exception) {
             getString(R.string.image_annotation_instruction)
         }
-        instructionTv.text = instruction
+        with(binding) {
+            instructionTv.text = instruction
 
-        // Set next button click handler
-        nextBtn.setOnClickListener { handleNextClick() }
+            // Set next button click handler
+            nextBtn.setOnClickListener { handleNextClick() }
 
-        // Set back button click handler
-        backBtn.setOnClickListener { viewModel.handleBackClick() }
+            // Set back button click handler
+            backBtn.setOnClickListener { viewModel.handleBackClick() }
 
-        // Set listeners for btn group
-        scoreToggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
-            if (isChecked) {
-                when (checkedId) {
-                    scoreBadBtn.id -> viewModel.handleScoreChange(R.string.img_annotation_verification_bad)
-                    scoreOKBtn.id -> viewModel.handleScoreChange(R.string.img_annotation_verification_ok)
-                    scoreGoodBtn.id -> viewModel.handleScoreChange(R.string.img_annotation_verification_good)
+            // Set listeners for btn group
+            scoreToggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+                if (isChecked) {
+                    when (checkedId) {
+                        scoreBadBtn.id -> viewModel.handleScoreChange(R.string.img_annotation_verification_bad)
+                        scoreOKBtn.id -> viewModel.handleScoreChange(R.string.img_annotation_verification_ok)
+                        scoreGoodBtn.id -> viewModel.handleScoreChange(R.string.img_annotation_verification_good)
+                    }
                 }
             }
         }
     }
 
-    override fun onPause() {
+    override fun onPause() = with(binding) {
         super.onPause()
         rectangleCropCoors = sourceImageIv.coordinatesForRectCropBoxes
         polygonCropCoors = sourceImageIv.coordinatesForPolygonCropBoxes
@@ -82,7 +87,7 @@ class ImageAnnotationVerificationFragment : BaseMTRendererFragment(R.layout.micr
         viewModel.handleNextCLick()
     }
 
-    private fun setupObservers() {
+    private fun setupObservers() = with(binding) {
         viewModel.imageFilePath.observe(viewLifecycleOwner.lifecycle, viewLifecycleScope) { path ->
             if (path.isNotEmpty()) {
                 val image: Bitmap = BitmapFactory.decodeFile(path)

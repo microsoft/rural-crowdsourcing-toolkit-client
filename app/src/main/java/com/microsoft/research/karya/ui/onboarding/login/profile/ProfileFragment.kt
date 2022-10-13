@@ -11,7 +11,6 @@ import com.microsoft.research.karya.ui.Destination
 import com.microsoft.research.karya.ui.base.BaseFragment
 import com.microsoft.research.karya.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.app_toolbar.*
 
 @AndroidEntryPoint
 class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
@@ -30,7 +29,6 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
         viewModel.getWorkerProfile()
 
         with(binding) {
-            toolbarBackBtn.visible()
 
             // On submit, send profile data
             submitProfileBtn.setOnClickListener {
@@ -39,7 +37,7 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
             }
 
             // back to home
-            toolbarBackBtn.setOnClickListener {
+            binding.appTb.setBackBtnClickListener {
                 findNavController().popBackStack()
             }
 
@@ -110,7 +108,7 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
     }
 
     private fun showEmptyUi() {
-        toolbarBackBtn.gone()
+        binding.appTb.hideBackButton()
         binding.submitProfileBtn.disable()
         hideLoading()
         enableInputFields()

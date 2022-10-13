@@ -19,15 +19,16 @@ import com.jsibbold.zoomage.enums.CropObjectStatus
 import com.jsibbold.zoomage.enums.CropObjectType
 import com.microsoft.research.karya.R
 import com.microsoft.research.karya.data.model.karya.enums.AssistantAudio
+import com.microsoft.research.karya.databinding.MicrotaskImageAnnotationBinding
 import com.microsoft.research.karya.ui.scenarios.common.BaseMTRendererFragment
 import com.microsoft.research.karya.utils.extensions.observe
+import com.microsoft.research.karya.utils.extensions.viewBinding
 import com.microsoft.research.karya.utils.extensions.viewLifecycleScope
 import com.microsoft.research.karya.utils.spotlight.SpotlightBuilderWrapper
 import com.microsoft.research.karya.utils.spotlight.TargetData
 import com.takusemba.spotlight.shape.Circle
 import com.takusemba.spotlight.shape.RoundedRectangle
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.microtask_image_annotation.*
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -49,6 +50,8 @@ class ImageAnnotationFragment : BaseMTRendererFragment(R.layout.microtask_image_
     lateinit var labelDetailArray: Array<Pair<String, Int>>
     lateinit var labels: List<String>
 
+    private val binding by viewBinding(MicrotaskImageAnnotationBinding::bind)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,93 +72,97 @@ class ImageAnnotationFragment : BaseMTRendererFragment(R.layout.microtask_image_
         } catch (e: Exception) {
             getString(R.string.image_annotation_instruction)
         }
-        instructionTv.text = instruction
+        with(binding) {
+            instructionTv.text = instruction
 
-        // Set next button click handler
-        nextBtn.setOnClickListener { handleNextClick() }
+            // Set next button click handler
+            nextBtn.root.setOnClickListener { handleNextClick() }
 
-        // Get labels
-        labels = try {
-            viewModel.task.params.asJsonObject.get("labels").asJsonArray.map { it.asString }
-        } catch (e: Exception) {
-            arrayListOf()
-        }
-        // Create label detail array
-        labelDetailArray = Array(labels.size) { idx ->
-            Pair(labels[idx], colors[idx])
-        }
-
-        editRectColorBtn.setOnClickListener {
-            // If no crop object in focus, return
-            if ((sourceImageIv.focusedCropObjectId).isNullOrEmpty()) {
-                return@setOnClickListener
+            // Get labels
+            labels = try {
+                viewModel.task.params.asJsonObject.get("labels").asJsonArray.map { it.asString }
+            } catch (e: Exception) {
+                arrayListOf()
             }
-            var alertDialog: AlertDialog? = null
-            val onLabelItemClickListener = object : OnLabelItemClickListener {
-                override fun onClick(labelView: View, position: Int) {
-                    sourceImageIv.setCropObjectColor(
-                        sourceImageIv.focusedCropObjectId,
-                        (colors[position])
-                    )
-                    alertDialog!!.dismiss()
+            // Create label detail array // TODO: It is throwing ArrayIndexOutOfBounds (colors is always of size 4 but labels not)
+            labelDetailArray = Array(labels.size) { idx ->
+                Pair(labels[idx], colors[idx])
+            }
+
+            editRectColorBtn.setOnClickListener {
+                // If no crop object in focus, return
+                if ((sourceImageIv.focusedCropObjectId).isNullOrEmpty()) {
+                    return@setOnClickListener
                 }
-            }
-            alertDialog = buildLabelListDialogBox(
-                getString(R.string.select_image_annotation_label_dialog_instruction),
-                onLabelItemClickListener
-            )
-            alertDialog!!.show()
-        }
-
-        // Set listeners to add crop object
-        addBoxButton.setOnClickListener { handleAddBoxClick() }
-        // Set Listeners to remove box
-        removeBoxButton.setOnClickListener { sourceImageIv.removeCropObject(sourceImageIv.focusedCropObjectId) }
-
-        // Set Listener to lock a crop box
-        lockCropBtn.setOnClickListener {
-            // If no rectangle in focus, return
-            if ((sourceImageIv.focusedCropObjectId).isNullOrEmpty()) {
-                return@setOnClickListener
-            }
-            val isLocked = sourceImageIv.lockOrUnlockCropObject(sourceImageIv.focusedCropObjectId)
-            // Change the image wrt the state of lock
-            if (isLocked) lockCropBtn.setImageResource(R.drawable.ic_outline_lock_24)
-            else lockCropBtn.setImageResource(R.drawable.ic_baseline_lock_open_24)
-        }
-
-        // Setting listener for rectangle crop
-        sourceImageIv.setOnCropRectangleClickListener { rectFData ->
-            if (rectFData.locked) lockCropBtn.setImageResource(R.drawable.ic_outline_lock_24)
-            else lockCropBtn.setImageResource(R.drawable.ic_baseline_lock_open_24)
-            spinner_item_color.setCardBackgroundColor(rectFData.color)
-            labelTv.text = labels[colors.indexOf(rectFData.color)]
-        }
-
-        // Setting listener for polygon crop
-        sourceImageIv.setOnCropPolygonClickListener { polygonData ->
-            if (polygonData.locked) lockCropBtn.setImageResource(R.drawable.ic_outline_lock_24)
-            else lockCropBtn.setImageResource(R.drawable.ic_baseline_lock_open_24)
-            spinner_item_color.setCardBackgroundColor(polygonData.color)
-            labelTv.text = labels[colors.indexOf(polygonData.color)]
-        }
-
-        // Set listener to add crop object after the image is loaded
-        sourceImageIv.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-            override fun onPreDraw(): Boolean {
-                return try {
-                    viewModel.renderOutputData()
-                    // Note that returning "true" is important or else the drawing pass will be canceled
-                    true
-                } finally {
-                    // Remove listener as further notifications are not needed
-                    sourceImageIv.viewTreeObserver.removeOnPreDrawListener(this)
+                var alertDialog: AlertDialog? = null
+                val onLabelItemClickListener = object : OnLabelItemClickListener {
+                    override fun onClick(labelView: View, position: Int) {
+                        sourceImageIv.setCropObjectColor(
+                            sourceImageIv.focusedCropObjectId,
+                            (colors[position])
+                        )
+                        alertDialog!!.dismiss()
+                    }
                 }
+                alertDialog = buildLabelListDialogBox(
+                    getString(R.string.select_image_annotation_label_dialog_instruction),
+                    onLabelItemClickListener
+                )
+                alertDialog!!.show()
             }
-        })
+
+            // Set listeners to add crop object
+            addBoxButton.setOnClickListener { handleAddBoxClick() }
+            // Set Listeners to remove box
+            removeBoxButton.setOnClickListener { sourceImageIv.removeCropObject(sourceImageIv.focusedCropObjectId) }
+
+            // Set Listener to lock a crop box
+            lockCropBtn.setOnClickListener {
+                // If no rectangle in focus, return
+                if ((sourceImageIv.focusedCropObjectId).isNullOrEmpty()) {
+                    return@setOnClickListener
+                }
+                val isLocked =
+                    sourceImageIv.lockOrUnlockCropObject(sourceImageIv.focusedCropObjectId)
+                // Change the image wrt the state of lock
+                if (isLocked) lockCropBtn.setImageResource(R.drawable.ic_outline_lock_24)
+                else lockCropBtn.setImageResource(R.drawable.ic_baseline_lock_open_24)
+            }
+
+            // Setting listener for rectangle crop
+            sourceImageIv.setOnCropRectangleClickListener { rectFData ->
+                if (rectFData.locked) lockCropBtn.setImageResource(R.drawable.ic_outline_lock_24)
+                else lockCropBtn.setImageResource(R.drawable.ic_baseline_lock_open_24)
+                spinnerItemColor.setCardBackgroundColor(rectFData.color)
+                labelTv.text = labels[colors.indexOf(rectFData.color)]
+            }
+
+            // Setting listener for polygon crop
+            sourceImageIv.setOnCropPolygonClickListener { polygonData ->
+                if (polygonData.locked) lockCropBtn.setImageResource(R.drawable.ic_outline_lock_24)
+                else lockCropBtn.setImageResource(R.drawable.ic_baseline_lock_open_24)
+                spinnerItemColor.setCardBackgroundColor(polygonData.color)
+                labelTv.text = labels[colors.indexOf(polygonData.color)]
+            }
+
+            // Set listener to add crop object after the image is loaded
+            sourceImageIv.viewTreeObserver.addOnPreDrawListener(object :
+                    ViewTreeObserver.OnPreDrawListener {
+                    override fun onPreDraw(): Boolean {
+                        return try {
+                            viewModel.renderOutputData()
+                            // Note that returning "true" is important or else the drawing pass will be canceled
+                            true
+                        } finally {
+                            // Remove listener as further notifications are not needed
+                            sourceImageIv.viewTreeObserver.removeOnPreDrawListener(this)
+                        }
+                    }
+                })
+        }
     }
 
-    private fun handleAddBoxClick() {
+    private fun handleAddBoxClick() = with(binding) {
         // TODO: Remove this code, temporary change for stanford study
         // Allow for addition of only one polygon
         if (sourceImageIv.coordinatesForPolygonCropBoxes.size > 0) {
@@ -170,13 +177,13 @@ class ImageAnnotationFragment : BaseMTRendererFragment(R.layout.microtask_image_
         }
     }
 
-    override fun onPause() {
+    override fun onPause() = with(binding) {
         super.onPause()
         rectangleCropCoors = sourceImageIv.coordinatesForRectCropBoxes
         polygonCropCoors = sourceImageIv.coordinatesForPolygonCropBoxes
     }
 
-    override fun onResume() {
+    override fun onResume() = with(binding) {
         super.onResume()
         // Check if we need to redraw rectangle crop objects on canvas
         if (sourceImageIv.coordinatesForRectCropBoxes.isEmpty() &&
@@ -201,7 +208,7 @@ class ImageAnnotationFragment : BaseMTRendererFragment(R.layout.microtask_image_
         }
     }
 
-    private fun handleNextClick() {
+    private fun handleNextClick() = with(binding) {
 
         val rectangleCoors = sourceImageIv.coordinatesForRectCropBoxes
         val polygonCoors = sourceImageIv.coordinatesForPolygonCropBoxes
@@ -215,7 +222,7 @@ class ImageAnnotationFragment : BaseMTRendererFragment(R.layout.microtask_image_
         viewModel.handleNextCLick()
     }
 
-    private fun setupObservers() {
+    private fun setupObservers() = with(binding) {
         viewModel.imageFilePath.observe(viewLifecycleOwner.lifecycle, viewLifecycleScope) { path ->
             if (path.isNotEmpty()) {
                 val image: Bitmap = BitmapFactory.decodeFile(path)
@@ -240,7 +247,7 @@ class ImageAnnotationFragment : BaseMTRendererFragment(R.layout.microtask_image_
         }
     }
 
-    private fun setupSpotLight() {
+    private fun setupSpotLight() = with(binding) {
 
         val spotlightPadding = 20
 
@@ -275,14 +282,14 @@ class ImageAnnotationFragment : BaseMTRendererFragment(R.layout.microtask_image_
 
         targetsDataList.add(
             TargetData(
-                nextBtn,
-                Circle(((nextBtn.height + spotlightPadding) / 2).toFloat()),
+                nextBtn.root,
+                Circle(((nextBtn.root.height + spotlightPadding) / 2).toFloat()),
                 R.layout.spotlight_target_temp,
                 AssistantAudio.IMAGE_ANNOTATION_NEXT_BUTTON,
             )
         )
 
-        val builderWrapper = SpotlightBuilderWrapper(this, targetsDataList, onCompletionListener = {
+        val builderWrapper = SpotlightBuilderWrapper(this@ImageAnnotationFragment, targetsDataList, onCompletionListener = {
             if (sourceImageIv == null) return@SpotlightBuilderWrapper
             sourceImageIv.allCropPolygonIds.forEach { id ->
                 sourceImageIv.removeCropObject(id)

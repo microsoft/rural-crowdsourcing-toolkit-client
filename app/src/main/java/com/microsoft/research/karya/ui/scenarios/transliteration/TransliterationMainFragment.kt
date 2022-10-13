@@ -13,22 +13,21 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.microsoft.research.karya.R
+import com.microsoft.research.karya.databinding.ItemFloatWordBinding
+import com.microsoft.research.karya.databinding.MicrotaskTransliterationBinding
 import com.microsoft.research.karya.ui.scenarios.common.BaseMTRendererFragment
 import com.microsoft.research.karya.ui.scenarios.transliteration.TransliterationViewModel.WordVerificationStatus
 import com.microsoft.research.karya.ui.scenarios.transliteration.validator.Validator
-import com.microsoft.research.karya.utils.extensions.gone
-import com.microsoft.research.karya.utils.extensions.observe
-import com.microsoft.research.karya.utils.extensions.viewLifecycleScope
-import com.microsoft.research.karya.utils.extensions.visible
+import com.microsoft.research.karya.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.item_float_word.view.*
-import kotlinx.android.synthetic.main.microtask_transliteration.*
 
 @AndroidEntryPoint
 class TransliterationMainFragment :
     BaseMTRendererFragment(R.layout.microtask_transliteration) {
     override val viewModel: TransliterationViewModel by viewModels()
     val args: TransliterationMainFragmentArgs by navArgs()
+
+    private val binding by viewBinding(MicrotaskTransliterationBinding::bind)
 
     private var prevInvalidWord: String = ""
 
@@ -52,29 +51,32 @@ class TransliterationMainFragment :
 
         setupObservers()
 
-        sentenceEt.inputType =
-            InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-        sentenceEt.filters = arrayOf(
-            InputFilter { source, start, end, dest, dstart, dend ->
-                return@InputFilter source.replace(Regex("[^a-z]*"), "")
-            }
-        )
+        with(binding) {
+            sentenceEt.inputType =
+                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+            sentenceEt.filters = arrayOf(
+                InputFilter { source, start, end, dest, dstart, dend ->
+                    return@InputFilter source.replace(Regex("[^a-z]*"), "")
+                }
+            )
 
-        /** record instruction */
-        val recordInstruction =
-            viewModel.task.params.asJsonObject.get("instruction").asString ?: ""
-        instructionTv.text = recordInstruction
+            /** record instruction */
+            /** record instruction */
+            val recordInstruction =
+                viewModel.task.params.asJsonObject.get("instruction").asString ?: ""
+            instructionTv.text = recordInstruction
 
-        addBtn.setOnClickListener { addWord() }
+            addBtn.setOnClickListener { addWord() }
 
-        sentenceEt.onSubmit { addWord() }
+            sentenceEt.onSubmit { addWord() }
 
-        nextBtn.setOnClickListener { onNextClick() }
+            nextBtn.setOnClickListener { onNextClick() }
+        }
 
         Validator.init()
     }
 
-    private fun addWord() {
+    private fun addWord() = with(binding) {
 
         errorTv.gone() // Remove any existing errors
 
@@ -120,7 +122,7 @@ class TransliterationMainFragment :
         viewModel.addWord(word)
     }
 
-    private fun showError(error: String) {
+    private fun showError(error: String) = with(binding) {
         errorTv.text = error
         errorTv.visible()
     }
@@ -152,12 +154,14 @@ class TransliterationMainFragment :
                 return
             }
         }
-        errorTv.gone()
-        userVariantLayout.removeAllViews()
+        with(binding) {
+            errorTv.gone()
+            userVariantLayout.removeAllViews()
+        }
         viewModel.handleNextClick()
     }
 
-    private fun setupObservers() {
+    private fun setupObservers() = with(binding) {
         viewModel.wordTvText.observe(
             viewLifecycleOwner.lifecycle,
             viewLifecycleScope
@@ -168,86 +172,86 @@ class TransliterationMainFragment :
             verifyFlowLayout.removeAllViews()
 
             for ((word, wordDetail) in variants) {
-                val view = layoutInflater.inflate(R.layout.item_float_word, null)
-                view.sentence.text = word
-
-                when (wordDetail.verificationStatus) {
-                    WordVerificationStatus.VALID -> setValidUI(view)
-                    WordVerificationStatus.INVALID -> setInvaidUI(view)
-                    WordVerificationStatus.UNKNOWN -> setUnknownUI(view)
-                }
-
-                view.setOnClickListener {
-
-                    // If validation is not allowed return
-                    if (!viewModel.allowValidation) return@setOnClickListener
+                val itemBinding = ItemFloatWordBinding.inflate(layoutInflater)
+                with(itemBinding) {
+                    sentence.text = word
 
                     when (wordDetail.verificationStatus) {
-                        WordVerificationStatus.VALID -> viewModel.modifyStatus(
-                            word,
-                            WordVerificationStatus.INVALID
-                        )
-                        WordVerificationStatus.INVALID, WordVerificationStatus.UNKNOWN -> viewModel.modifyStatus(
-                            word,
-                            WordVerificationStatus.VALID
-                        )
+                        WordVerificationStatus.VALID -> setValidUI(itemBinding)
+                        WordVerificationStatus.INVALID -> setInvaidUI(itemBinding)
+                        WordVerificationStatus.UNKNOWN -> setUnknownUI(itemBinding)
                     }
-                }
 
-                verifyFlowLayout.addView(view)
+                    root.setOnClickListener {
+
+                        // If validation is not allowed return
+                        if (!viewModel.allowValidation) return@setOnClickListener
+
+                        when (wordDetail.verificationStatus) {
+                            WordVerificationStatus.VALID -> viewModel.modifyStatus(
+                                word,
+                                WordVerificationStatus.INVALID
+                            )
+                            WordVerificationStatus.INVALID, WordVerificationStatus.UNKNOWN -> viewModel.modifyStatus(
+                                word,
+                                WordVerificationStatus.VALID
+                            )
+                        }
+                    }
+                    verifyFlowLayout.addView(root)
+                }
             }
         }
 
         viewModel.inputVariants.observe(viewLifecycleOwner) { variants ->
             userVariantLayout.removeAllViews()
             for (word in variants.keys.reversed()) {
-                val view = layoutInflater.inflate(R.layout.item_float_word, null)
-                view.sentence.text = word
-
-                setNewUI(view)
-
-                view.removeImageView.setOnClickListener { viewModel.removeWord(word) }
-
-                userVariantLayout.addView(view)
+                val itemBinding = ItemFloatWordBinding.inflate(layoutInflater)
+                with(itemBinding) {
+                    sentence.text = word
+                    setNewUI(this)
+                    removeImageView.setOnClickListener { viewModel.removeWord(word) }
+                    userVariantLayout.addView(root)
+                }
             }
             // Clear the edittext
             sentenceEt.setText("")
         }
     }
 
-    private fun setValidUI(view: View) {
-        view.float_sentence_card.background.setTint(
+    private fun setValidUI(itemBinding: ItemFloatWordBinding) = with(itemBinding) {
+        floatSentenceCard.background.setTint(
             ContextCompat.getColor(
                 requireContext(),
                 R.color.c_light_green
             )
         )
-        view.removeImageView.gone()
+        removeImageView.gone()
     }
 
-    private fun setInvaidUI(view: View) {
-        view.float_sentence_card.background.setTint(
+    private fun setInvaidUI(itemBinding: ItemFloatWordBinding) = with(itemBinding) {
+        floatSentenceCard.background.setTint(
             ContextCompat.getColor(
                 requireContext(),
                 R.color.c_red
             )
         )
-        view.removeImageView.gone()
+        removeImageView.gone()
     }
 
-    private fun setNewUI(view: View) {
-        view.float_sentence_card.background.setTint(
+    private fun setNewUI(itemBinding: ItemFloatWordBinding) = with(itemBinding) {
+        floatSentenceCard.background.setTint(
             ContextCompat.getColor(
                 requireContext(),
                 R.color.c_light_grey
             )
         )
-        view.removeImageView.visible()
+        removeImageView.visible()
     }
 
-    private fun setUnknownUI(view: View) {
-        view.float_sentence_card.background.setTint(Color.LTGRAY)
-        view.removeImageView.gone()
+    private fun setUnknownUI(itemBinding: ItemFloatWordBinding) = with(itemBinding) {
+        floatSentenceCard.background.setTint(Color.LTGRAY)
+        removeImageView.gone()
     }
 
     fun EditText.onSubmit(func: () -> Unit) {
