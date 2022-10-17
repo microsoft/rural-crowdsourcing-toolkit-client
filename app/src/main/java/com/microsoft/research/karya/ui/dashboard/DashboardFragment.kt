@@ -1,10 +1,16 @@
 package com.microsoft.research.karya.ui.dashboard
 
 import android.app.AlertDialog
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.edit
+import androidx.datastore.dataStore
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -17,9 +23,11 @@ import com.microsoft.research.karya.data.model.karya.enums.ScenarioType
 import com.microsoft.research.karya.data.model.karya.modelsExtra.TaskInfo
 import com.microsoft.research.karya.databinding.FragmentDashboardBinding
 import com.microsoft.research.karya.ui.base.SessionFragment
+import com.microsoft.research.karya.utils.PreferenceKeys
 import com.microsoft.research.karya.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -42,8 +50,11 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
 
     private var dialog: AlertDialog? = null
 
+    private lateinit var sharedPrefs: SharedPreferences
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        sharedPrefs = requireActivity().getPreferences(Context.MODE_PRIVATE)
         setupViews()
         setupWorkRequests()
         observeUi()
@@ -52,7 +63,9 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
     private fun observeUi() {
         viewModel.dashboardUiState.observe(lifecycle, lifecycleScope) { dashboardUiState ->
             when (dashboardUiState) {
-                is DashboardUiState.Success -> showSuccessUi(dashboardUiState.data)
+                is DashboardUiState.Success -> lifecycleScope.launch {
+                    showSuccessUi(dashboardUiState.data)
+                }
                 is DashboardUiState.Error -> showErrorUi(
                     dashboardUiState.throwable,
                     ERROR_TYPE.TASK_ERROR,
@@ -193,7 +206,7 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
             .enqueueUniqueWork(UNIQUE_SYNC_WORK_NAME, ExistingWorkPolicy.KEEP, syncWorkRequest)
     }
 
-    private fun showSuccessUi(data: DashboardStateSuccess) {
+    private suspend fun showSuccessUi(data: DashboardStateSuccess) {
         WorkManager.getInstance(requireContext()).getWorkInfoByIdLiveData(syncWorkRequest.id)
             .observe(
                 viewLifecycleOwner,
@@ -203,6 +216,7 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
                     }
                 }
             )
+
         binding.syncCv.enable()
         data.apply {
             (binding.tasksRv.adapter as TaskListAdapter).updateList(taskInfoData)
@@ -210,9 +224,25 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
 
         // Check if worker is initialised in viewmodel
         if (viewModel.workerAccessCode.value.isNotEmpty()) {
-            // Sync if no tasks are present
-            if (data.taskInfoData.isEmpty()) {
+            /**
+             * Thi check is required because whenever a user first time logs in he/she will not have any task in local database
+             * neither any task is assigned to him from the box. Thus the call to syncServer will run in an infinite recursion
+             * because taskInfoData will always be empty, even if sync was done.
+             *
+             * To make sure this runs only once, we are storing the info in SharePrefs and making it false as soon as
+             * first sync occurs.
+             */
+            val dataStore = requireContext().dataStore
+            val syncKey = booleanPreferencesKey(PreferenceKeys.IS_FIRST_SYNC)
+            val isSyncRequired = withContext(Dispatchers.IO) { dataStore.data.first()[syncKey] ?: true }
+            /** Sync if no tasks are present, this needs to run only for first time a user logs in. After login and first sync */
+            if (data.taskInfoData.isEmpty() && isSyncRequired) {
                 syncWithServer()
+
+                /**
+                 * Once first sync is done, make the flag false
+                 */
+                dataStore.edit { pref -> pref[syncKey] = false }
             }
         }
 

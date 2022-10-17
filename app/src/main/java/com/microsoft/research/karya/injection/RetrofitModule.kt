@@ -1,7 +1,6 @@
 package com.microsoft.research.karya.injection
 
 import android.content.Context
-import com.microsoft.research.karya.BuildConfig
 import com.microsoft.research.karya.data.manager.AuthManager
 import com.microsoft.research.karya.data.manager.BaseUrlManager
 import com.microsoft.research.karya.data.remote.interceptors.HostSelectionInterceptor
@@ -41,7 +40,9 @@ class RetrofitModule {
     @Provides
     @Reusable
     @BaseUrl
-    fun provideBaseUrl(): String = BuildConfig.BOX_URL
+    fun provideBaseUrl(): String {
+        return "http://__url__"
+    }
 
     @Provides
     @Singleton
