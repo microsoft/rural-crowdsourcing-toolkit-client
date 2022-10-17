@@ -107,6 +107,7 @@ dependencies {
     implementation(Dependencies.AndroidX.multidex)
     implementation(Dependencies.AndroidX.work_runtime)
     implementation(Dependencies.AndroidX.work_multiprocess)
+    implementation(Dependencies.AndroidX.gridLayout)
 
     implementation(Dependencies.AndroidX.Lifecycle.common)
     implementation(Dependencies.AndroidX.Lifecycle.extensions)
@@ -121,11 +122,10 @@ dependencies {
 
     implementation(Dependencies.AndroidX.Room.roomKtx)
     implementation(Dependencies.AndroidX.Room.roomRuntime)
+    kapt(Dependencies.AndroidX.Room.roomCompiler)
 
     implementation(Dependencies.AndroidX.Navigation.fragmentKtx)
     implementation(Dependencies.AndroidX.Navigation.uiKtx)
-
-    kapt(Dependencies.AndroidX.Room.roomCompiler)
 
     implementation(Dependencies.Google.gson)
     implementation(Dependencies.Google.material)
@@ -145,41 +145,25 @@ dependencies {
     implementation(Dependencies.ThirdParty.okhttp)
     implementation(Dependencies.ThirdParty.loggingInterceptor)
     implementation(Dependencies.ThirdParty.stateProgressBar)
-
     implementation(Dependencies.ThirdParty.Retrofit.retrofit)
     implementation(Dependencies.ThirdParty.Retrofit.gsonConverter)
-
     debugImplementation(Dependencies.ThirdParty.debugDB)
-
-    implementation("com.mcxiaoke.volley:library:1.0.19")
-    implementation("com.nex3z:flow-layout:1.3.4-beta01")
-
-    // Scaled dp and sp implemenations
-    implementation("com.intuit.ssp:ssp-android:1.0.6")
-    implementation("com.intuit.sdp:sdp-android:1.0.6")
-
-    // Themed button toggle group
-    implementation("nl.bryanderidder:themed-toggle-button-group:1.3.4")
-
-    // Camera view
-    implementation("com.otaliastudios:cameraview:2.7.2")
-
-    // Android rating bar
-    implementation("me.zhanghai.android.materialratingbar:library:1.3.1")
-    // Custom aars
-    implementation(files("libs/zoomage-debug.aar"))
-
-    // Grid layout for lower API levels
-    implementation("androidx.gridlayout:gridlayout:1.0.0")
-
-    // Splotlight
-    implementation("com.github.takusemba:spotlight:2.0.5")
+    implementation(Dependencies.ThirdParty.volley)
+    implementation(Dependencies.ThirdParty.flowLayout)
+    // Scaled dp and sp implementations
+    implementation(Dependencies.ThirdParty.Intuit.ssp)
+    implementation(Dependencies.ThirdParty.Intuit.sdp)
+    implementation(Dependencies.ThirdParty.toggleButtonGroup) // Themed button toggle group
+    implementation(Dependencies.ThirdParty.cameraView) // Camera view
+    implementation(Dependencies.ThirdParty.ratingBar) // Android rating bar
+    implementation(Dependencies.ThirdParty.spotlight) // Splotlight
+    implementation(files("libs/zoomage-debug.aar")) // Custom aars
 
     // Video data collection
-    implementation("com.github.HamidrezaAmz:MagicalExoPlayer:2.0.6")
-    "largeImplementation" ("com.google.android.gms:play-services-mlkit-face-detection:16.2.0")
-    "largeImplementation" ("com.google.mlkit:face-detection:16.1.2")
-    "largeImplementation" ("com.github.fishwjy:VideoCompressor:master-SNAPSHOT")
+    implementation(Dependencies.ThirdParty.magicalExoPlayer)
+    "largeImplementation" (Dependencies.Google.MLKit.faceDetectionPlayServices)
+    "largeImplementation" (Dependencies.Google.MLKit.faceDetection)
+    "largeImplementation" (Dependencies.ThirdParty.videoCompressor)
 }
 
 kapt {

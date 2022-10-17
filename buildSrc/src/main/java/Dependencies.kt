@@ -48,6 +48,7 @@ object Dependencies {
     const val work_multiprocess = "androidx.work:work-multiprocess:$work_version"
     const val multidex = "androidx.multidex:multidex:2.0.1"
     const val datastorePrefs = "androidx.datastore:datastore-preferences:1.0.0-beta01"
+    const val gridLayout = "androidx.gridlayout:gridlayout:1.0.0" // Grid layout for lower API levels
 
     object Lifecycle {
       private const val version = "2.4.0"
@@ -88,6 +89,11 @@ object Dependencies {
       const val analytics = "com.google.firebase:firebase-analytics"
     }
 
+    object MLKit {
+      const val faceDetection = "com.google.mlkit:face-detection:16.1.2"
+      const val faceDetectionPlayServices = "com.google.android.gms:play-services-mlkit-face-detection:16.2.0"
+    }
+
     object Hilt {
       const val hiltAndroid = "com.google.dagger:hilt-android:$HILT_VERSION"
       const val hiltAndroidCompiler = "com.google.dagger:hilt-android-compiler:$HILT_VERSION"
@@ -103,13 +109,27 @@ object Dependencies {
     const val stateProgressBar = "com.kofigyan.stateprogressbar:stateprogressbar:1.0.0"
     const val loggingInterceptor = "com.squareup.okhttp3:logging-interceptor:4.9.1"
     const val okhttp = "com.squareup.okhttp3:okhttp:5.0.0-alpha.2"
-    const val cameraview = "com.otaliastudios:cameraview:2.7.0"
+    const val cameraView = "com.otaliastudios:cameraview:2.7.2"
+    const val ratingBar = "me.zhanghai.android.materialratingbar:library:1.3.1"
+    const val spotlight = "com.github.takusemba:spotlight:2.0.5"
+    const val toggleButtonGroup = "nl.bryanderidder:themed-toggle-button-group:1.3.4"
+    const val flowLayout = "com.nex3z:flow-layout:1.3.4-beta01"
+    const val volley = "com.mcxiaoke.volley:library:1.0.19" // why this one? This is Deprecated
+    const val magicalExoPlayer = "com.github.HamidrezaAmz:MagicalExoPlayer:2.0.6"
+    const val videoCompressor = "com.github.fishwjy:VideoCompressor:master-SNAPSHOT"
 
     object Retrofit {
       private const val version = "2.9.0"
 
       const val retrofit = "com.squareup.retrofit2:retrofit:$version"
       const val gsonConverter = "com.squareup.retrofit2:converter-gson:$version"
+    }
+
+    object Intuit {
+      private const val version = "1.0.6"
+
+      const val ssp = "com.intuit.ssp:ssp-android:$version"
+      const val sdp = "com.intuit.sdp:sdp-android:$version"
     }
   }
 }
