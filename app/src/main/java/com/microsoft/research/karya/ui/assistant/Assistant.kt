@@ -80,19 +80,19 @@ constructor(
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    private fun stopAssistant() {
+    fun stopAssistant() {
         if (assistantPlayer.isPlaying) assistantPlayer.stop()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    private fun pauseAssistant() {
+    fun pauseAssistant() {
         if (assistantPlayer.isPlaying) {
             assistantPlayer.pause()
         }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    private fun initializePlayer() {
+    fun initializePlayer() {
         if (!::assistantPlayer.isInitialized) {
             assistantPlayer = MediaPlayer()
         }

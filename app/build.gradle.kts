@@ -3,20 +3,20 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-kapt")
+    kotlin("kapt")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
-    id("dagger.hilt.android.plugin")
+    id(Plugin.Hilt.id) // version is picked up from parent i.e project'd root build.gradle
     id("androidx.navigation.safeargs.kotlin")
     id("com.github.ben-manes.versions") version "0.38.0"
 }
 
 android {
-    compileSdkVersion(31)
+    compileSdk = 33
     defaultConfig {
         applicationId = "com.microsoft.research.karya"
-        minSdkVersion(24)
-        targetSdkVersion(30)
+        minSdk = 24
+        targetSdk = 33
         multiDexEnabled = true
         versionCode = 25
         versionName = "1"
@@ -41,19 +41,19 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
         kapt {
             arguments {
                 arg("room.schemaLocation", "$projectDir/schemas")
             }
         }
     }
-    lintOptions {
-        isAbortOnError = false
+    lint {
+        abortOnError = false
     }
     buildFeatures {
         dataBinding = true
@@ -107,12 +107,14 @@ dependencies {
     implementation(Dependencies.AndroidX.multidex)
     implementation(Dependencies.AndroidX.work_runtime)
     implementation(Dependencies.AndroidX.work_multiprocess)
+    implementation(Dependencies.AndroidX.gridLayout)
 
     implementation(Dependencies.AndroidX.Lifecycle.common)
     implementation(Dependencies.AndroidX.Lifecycle.extensions)
     implementation(Dependencies.AndroidX.Lifecycle.livedataKtx)
     implementation(Dependencies.AndroidX.Lifecycle.runtimeKtx)
     implementation(Dependencies.AndroidX.Lifecycle.saved_state)
+    implementation(Dependencies.AndroidX.Lifecycle.viewModel)
     implementation(Dependencies.AndroidX.Lifecycle.viewModelKtx)
 
     implementation(Dependencies.AndroidX.Navigation.fragmentKtx)
@@ -120,11 +122,10 @@ dependencies {
 
     implementation(Dependencies.AndroidX.Room.roomKtx)
     implementation(Dependencies.AndroidX.Room.roomRuntime)
+    kapt(Dependencies.AndroidX.Room.roomCompiler)
 
     implementation(Dependencies.AndroidX.Navigation.fragmentKtx)
     implementation(Dependencies.AndroidX.Navigation.uiKtx)
-
-    kapt(Dependencies.AndroidX.Room.roomCompiler)
 
     implementation(Dependencies.Google.gson)
     implementation(Dependencies.Google.material)
@@ -133,11 +134,8 @@ dependencies {
     implementation(Dependencies.Google.Firebase.crashlytics)
     implementation(Dependencies.Google.Firebase.analytics)
 
-    implementation(Dependencies.AndroidX.Hilt.dagger)
-    implementation(Dependencies.AndroidX.Hilt.hiltNavigationFragment)
-
-    kapt(Dependencies.AndroidX.Hilt.daggerCompiler)
-    kapt(Dependencies.AndroidX.Hilt.daggerHiltCompiler)
+    implementation(Dependencies.Google.Hilt.hiltAndroid)
+    kapt(Dependencies.Google.Hilt.hiltAndroidCompiler)
 
     implementation(Dependencies.Kotlin.Coroutines.core)
     implementation(Dependencies.Kotlin.Coroutines.coroutines)
@@ -147,39 +145,27 @@ dependencies {
     implementation(Dependencies.ThirdParty.okhttp)
     implementation(Dependencies.ThirdParty.loggingInterceptor)
     implementation(Dependencies.ThirdParty.stateProgressBar)
-
     implementation(Dependencies.ThirdParty.Retrofit.retrofit)
     implementation(Dependencies.ThirdParty.Retrofit.gsonConverter)
-
     debugImplementation(Dependencies.ThirdParty.debugDB)
-
-    implementation("com.mcxiaoke.volley:library:1.0.19")
-    implementation("com.nex3z:flow-layout:1.3.4-beta01")
-
-    // Scaled dp and sp implemenations
-    implementation("com.intuit.ssp:ssp-android:1.0.6")
-    implementation("com.intuit.sdp:sdp-android:1.0.6")
-
-    // Themed button toggle group
-    implementation("nl.bryanderidder:themed-toggle-button-group:1.3.4")
-
-    // Camera view
-    implementation("com.otaliastudios:cameraview:2.7.2")
-
-    // Android rating bar
-    implementation("me.zhanghai.android.materialratingbar:library:1.3.1")
-    // Custom aars
-    implementation(files("libs/zoomage-debug.aar"))
-
-    // Grid layout for lower API levels
-    implementation("androidx.gridlayout:gridlayout:1.0.0")
-
-    // Splotlight
-    implementation("com.github.takusemba:spotlight:2.0.5")
+    implementation(Dependencies.ThirdParty.volley)
+    implementation(Dependencies.ThirdParty.flowLayout)
+    // Scaled dp and sp implementations
+    implementation(Dependencies.ThirdParty.Intuit.ssp)
+    implementation(Dependencies.ThirdParty.Intuit.sdp)
+    implementation(Dependencies.ThirdParty.toggleButtonGroup) // Themed button toggle group
+    implementation(Dependencies.ThirdParty.cameraView) // Camera view
+    implementation(Dependencies.ThirdParty.ratingBar) // Android rating bar
+    implementation(Dependencies.ThirdParty.spotlight) // Splotlight
+    implementation(files("libs/zoomage-debug.aar")) // Custom aars
 
     // Video data collection
-    implementation("com.github.HamidrezaAmz:MagicalExoPlayer:2.0.6")
-    "largeImplementation" ("com.google.android.gms:play-services-mlkit-face-detection:16.2.0")
-    "largeImplementation" ("com.google.mlkit:face-detection:16.1.2")
-    "largeImplementation" ("com.github.fishwjy:VideoCompressor:master-SNAPSHOT")
+    implementation(Dependencies.ThirdParty.magicalExoPlayer)
+    "largeImplementation" (Dependencies.Google.MLKit.faceDetectionPlayServices)
+    "largeImplementation" (Dependencies.Google.MLKit.faceDetection)
+    "largeImplementation" (Dependencies.ThirdParty.videoCompressor)
+}
+
+kapt {
+    correctErrorTypes = true
 }

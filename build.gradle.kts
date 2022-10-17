@@ -16,9 +16,9 @@ buildscript {
         }
     }
 
+    // TODO: Move to plugins block (recommended from AGP 7.3)
     dependencies {
         classpath(Plugins.agp)
-        classpath(Plugins.hilt)
         classpath(Plugins.kotlin)
         classpath(Plugins.gms)
         classpath(Plugins.crashlytics)
@@ -30,7 +30,8 @@ buildscript {
 }
 
 plugins {
-    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+    id(Plugin.KtLint.id) version Plugin.KtLint.version
+    id(Plugin.Hilt.id) version Plugin.Hilt.version apply false
 }
 
 apply {
@@ -42,7 +43,7 @@ allprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     ktlint {
         /**
-         * By default, Ktlint throws doesn't allow wildcard-imports
+         * By default, Ktlint doesn't allow wildcard-imports
          * and classes with name other than filename
          * Although it is a good practice, current code violates this principle
          * Once this issue has been addressed we can remove 'filename' from the list
