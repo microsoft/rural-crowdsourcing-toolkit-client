@@ -143,6 +143,7 @@ class TransliterationMainFragment :
                     WordVerificationStatus.VALID -> {
                         atleastOneValidNew = true
                     }
+                    else -> {}
                 }
             }
             if (!noUnknowns) {
@@ -180,6 +181,7 @@ class TransliterationMainFragment :
                         WordVerificationStatus.VALID -> setValidUI(itemBinding)
                         WordVerificationStatus.INVALID -> setInvaidUI(itemBinding)
                         WordVerificationStatus.UNKNOWN -> setUnknownUI(itemBinding)
+                        else -> {}
                     }
 
                     root.setOnClickListener {
@@ -196,6 +198,7 @@ class TransliterationMainFragment :
                                 word,
                                 WordVerificationStatus.VALID
                             )
+                            else -> {}
                         }
                     }
                     verifyFlowLayout.addView(root)

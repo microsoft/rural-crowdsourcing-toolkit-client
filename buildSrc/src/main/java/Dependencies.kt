@@ -76,12 +76,25 @@ object Dependencies {
       const val fragmentKtx = "androidx.navigation:navigation-fragment-ktx:$NAVIGATION_VERSION"
       const val uiKtx = "androidx.navigation:navigation-ui-ktx:$NAVIGATION_VERSION"
     }
+
+    object Compose {
+      private const val version = "1.2.1"
+      const val runtime = "androidx.compose.runtime:runtime:$version"
+      const val ui = "androidx.compose.ui:ui:$version"
+      const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
+      const val foundation = "androidx.compose.foundation:foundation:$version"
+      const val foundationLayout = "androidx.compose.foundation:foundation-layout:$version"
+      const val runtimeLiveData = "androidx.compose.runtime:runtime-livedata:$version"
+      const val material3 = "androidx.compose.material3:material3:1.0.0"
+      const val material3WindowSize = "androidx.compose.material3:material3-window-size-class:1.0.0"
+    }
   }
 
   object Google {
 
     const val gson = "com.google.code.gson:gson:2.8.6"
-    const val material = "com.google.android.material:material:1.4.0-alpha02"
+    const val material = "com.google.android.material:material:1.6.1"
+    const val materialComposeAdapter = "com.google.android.material:compose-theme-adapter-3:1.0.20"
 
     object Firebase {
       const val bom = "com.google.firebase:firebase-bom:27.1.0"

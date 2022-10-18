@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Light Theme -->
-    <style name="ThemeLight" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="ThemeLight" parent="Theme.Material3.Light.NoActionBar">
 
         <!-- Primary colors -->
         <item name="colorPrimary">@color/c_dark_green</item>

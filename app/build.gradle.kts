@@ -58,6 +58,10 @@ android {
     buildFeatures {
         dataBinding = true
         viewBinding = true
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.3.2"
     }
     packagingOptions {
         exclude("META-INF/DEPENDENCIES")
@@ -127,8 +131,18 @@ dependencies {
     implementation(Dependencies.AndroidX.Navigation.fragmentKtx)
     implementation(Dependencies.AndroidX.Navigation.uiKtx)
 
+    implementation(Dependencies.AndroidX.Compose.ui)
+    implementation(Dependencies.AndroidX.Compose.uiTooling)
+    implementation(Dependencies.AndroidX.Compose.foundation)
+    implementation(Dependencies.AndroidX.Compose.foundationLayout)
+    implementation(Dependencies.AndroidX.Compose.runtime)
+    implementation(Dependencies.AndroidX.Compose.runtimeLiveData)
+    implementation(Dependencies.AndroidX.Compose.material3)
+    implementation(Dependencies.AndroidX.Compose.material3WindowSize)
+
     implementation(Dependencies.Google.gson)
     implementation(Dependencies.Google.material)
+    implementation(Dependencies.Google.materialComposeAdapter)
 
     implementation(platform(Dependencies.Google.Firebase.bom))
     implementation(Dependencies.Google.Firebase.crashlytics)
