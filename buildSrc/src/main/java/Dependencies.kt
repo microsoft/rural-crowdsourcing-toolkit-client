@@ -117,6 +117,7 @@ object Dependencies {
     const val volley = "com.mcxiaoke.volley:library:1.0.19" // why this one? This is Deprecated
     const val magicalExoPlayer = "com.github.HamidrezaAmz:MagicalExoPlayer:2.0.6"
     const val videoCompressor = "com.github.fishwjy:VideoCompressor:master-SNAPSHOT"
+    const val timber = "com.jakewharton.timber:timber:5.0.1"
 
     object Retrofit {
       private const val version = "2.9.0"

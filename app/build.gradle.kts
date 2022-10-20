@@ -164,6 +164,9 @@ dependencies {
     "largeImplementation" (Dependencies.Google.MLKit.faceDetectionPlayServices)
     "largeImplementation" (Dependencies.Google.MLKit.faceDetection)
     "largeImplementation" (Dependencies.ThirdParty.videoCompressor)
+
+    // Timber for logging
+    implementation(Dependencies.ThirdParty.timber)
 }
 
 kapt {
