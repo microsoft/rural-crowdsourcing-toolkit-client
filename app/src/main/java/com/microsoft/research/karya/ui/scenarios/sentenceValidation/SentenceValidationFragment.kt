@@ -11,6 +11,7 @@ import com.microsoft.research.karya.databinding.MicrotaskSentenceValidationBindi
 import com.microsoft.research.karya.ui.scenarios.common.BaseMTRendererFragment
 import com.microsoft.research.karya.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class SentenceValidationFragment : BaseMTRendererFragment(R.layout.microtask_sentence_validation) {
@@ -41,6 +42,7 @@ class SentenceValidationFragment : BaseMTRendererFragment(R.layout.microtask_sen
                 val instruction = viewModel.task.params.asJsonObject.get("instruction").asString
                 instructionTv.text = instruction
             } catch (e: Exception) {
+                Timber.w(e)
                 instructionTv.gone()
             }
         }

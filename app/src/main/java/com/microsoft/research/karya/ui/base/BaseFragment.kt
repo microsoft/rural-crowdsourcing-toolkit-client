@@ -18,6 +18,7 @@ import com.microsoft.research.karya.utils.extensions.finish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 abstract class BaseFragment : Fragment {
@@ -76,6 +77,7 @@ abstract class BaseFragment : Fragment {
                 }
             } catch (e: Exception) {
                 // Ignore exceptions
+                Timber.w(e)
             }
         }
     }

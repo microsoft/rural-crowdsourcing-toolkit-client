@@ -1,6 +1,5 @@
 package com.microsoft.research.karya.data.manager
 
-import android.util.Log
 import com.microsoft.research.karya.data.repo.LanguageRepository
 import com.microsoft.research.karya.utils.FileUtils
 import com.microsoft.research.karya.utils.Result
@@ -10,6 +9,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -42,7 +42,7 @@ constructor(
                 .getLanguageAssets(accessCode, language)
                 .flowOn(Dispatchers.IO)
                 .catch {
-                    Log.d("ResourceManager", "Error downloading files for language: $language")
+                    Timber.d("Error downloading files for language: $language")
                     emit(Result.Error(it))
                     return@catch
                 }

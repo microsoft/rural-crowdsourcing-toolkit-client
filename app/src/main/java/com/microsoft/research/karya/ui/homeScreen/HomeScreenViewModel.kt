@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -86,12 +87,14 @@ constructor(
             val name = try {
                 worker.profile!!.asJsonObject.get("name").asString
             } catch (e: Exception) {
+                Timber.w(e)
                 "No Name"
             }
 
             val phoneNumber = try {
                 worker.phoneNumber!!
             } catch (e: Exception) {
+                Timber.w(e)
                 "9999999999"
             }
 
@@ -106,6 +109,7 @@ constructor(
                 _points.value = try {
                     workerRepository.getXPPoints(worker.id)!!
                 } catch (e: Exception) {
+                    Timber.w(e)
                     0
                 }
             }
@@ -126,21 +130,25 @@ constructor(
             val recordingAccuracy = try {
                 scenarioSummary[ScenarioType.SPEECH_DATA]!!.get("accuracy").asFloat
             } catch (e: Exception) {
+                Timber.w(e)
                 0.0f
             }
             val transcriptionAccuracy = try {
                 scenarioSummary[ScenarioType.SPEECH_TRANSCRIPTION]!!.get("accuracy").asFloat
             } catch (e: Exception) {
+                Timber.w(e)
                 0.0f
             }
             val typingAccuracy = try {
                 scenarioSummary[ScenarioType.SENTENCE_CORPUS]!!.get("accuracy").asFloat
             } catch (e: Exception) {
+                Timber.w(e)
                 0.0f
             }
             val imageAnnotationAccuracy = try {
                 scenarioSummary[ScenarioType.IMAGE_ANNOTATION]!!.get("accuracy").asFloat
             } catch (e: Exception) {
+                Timber.w(e)
                 0.0f
             }
 

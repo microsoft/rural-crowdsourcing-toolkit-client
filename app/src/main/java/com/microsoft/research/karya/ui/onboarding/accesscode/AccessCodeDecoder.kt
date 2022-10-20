@@ -4,6 +4,7 @@ import android.content.Context
 import com.microsoft.research.karya.BuildConfig
 import com.microsoft.research.karya.data.exceptions.InvalidAccessCodeException
 import org.json.JSONObject
+import timber.log.Timber
 import kotlin.properties.Delegates
 
 private const val VERSION_0: Long = 0
@@ -48,7 +49,7 @@ class AccessCodeDecoder {
 
                 return url
             } catch (e: Throwable) {
-                // TODO: Log the error somewhere
+                Timber.e(e)
                 return DEFAULT_URL
             }
         }

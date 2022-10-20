@@ -8,6 +8,7 @@ import com.microsoft.research.karya.data.repo.WorkerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -51,7 +52,10 @@ constructor(
                     _phoneNumberUiState.value = PhoneNumberUiState.Success
                     _phoneNumberEffects.emit(PhoneNumberEffects.Navigate)
                 }
-                .catch { throwable -> _phoneNumberUiState.value = PhoneNumberUiState.Error(throwable) }
+                .catch { throwable ->
+                    Timber.e(throwable)
+                    _phoneNumberUiState.value = PhoneNumberUiState.Error(throwable)
+                }
                 .collect()
         }
     }

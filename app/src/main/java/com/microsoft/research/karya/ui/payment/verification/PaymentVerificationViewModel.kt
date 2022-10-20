@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,7 +45,8 @@ constructor(
 
             paymentRepository
                 .getCurrentAccount(idToken)
-                .catch {
+                .catch { throwable ->
+                    Timber.e(throwable)
                     _uiStateFlow.update {
                         it.copy(isLoading = false, errorMessage = "Error connecting to server", requestProcessed = false)
                     }
@@ -103,7 +105,10 @@ constructor(
             _uiStateFlow.update { it.copy(isLoading = true) }
             paymentRepository
                 .verifyAccount(idToken, accountRecordId, confirm)
-                .catch { _navigationFlow.emit(PaymentVerificationNavigation.FAILURE) }
+                .catch { throwable ->
+                    Timber.e(throwable)
+                    _navigationFlow.emit(PaymentVerificationNavigation.FAILURE)
+                }
                 .collect { paymentInfoResponse ->
                     paymentRepository.updatePaymentRecord(worker.id, paymentInfoResponse)
                     when (paymentInfoResponse.status) {

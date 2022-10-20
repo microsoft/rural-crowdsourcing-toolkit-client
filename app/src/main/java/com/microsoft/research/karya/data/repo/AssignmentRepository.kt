@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
+import timber.log.Timber
 import javax.inject.Inject
 
 private const val INITIAL_TIME = "1970-01-01T00:00:00Z"
@@ -267,7 +268,9 @@ constructor(
                     reportSummary.volume += volume
                     count += 1
                 }
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                Timber.w(e)
+            }
         }
         if (count > 0) {
             reportSummary.accuracy /= (count * 2.0f / 5)
@@ -293,7 +296,9 @@ constructor(
                         summary[key] = summary[key]!! + report.get(key).asFloat
                         count[key] = count[key]!! + 1
                     }
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                    Timber.w(e)
+                }
             }
         }
 
@@ -320,7 +325,9 @@ constructor(
             if (ar.report != null && !ar.report.isJsonNull) {
                 try {
                     taskReports[ar.task_id]!!.add(ar.report.asJsonObject)
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                    Timber.w(e)
+                }
             }
         }
 
@@ -362,7 +369,9 @@ constructor(
                 if (ar.report != null && !ar.report.isJsonNull) {
                     try {
                         scenarioReports[ar.scenario_name]!!.add(ar.report.asJsonObject)
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                        Timber.w(e)
+                    }
                 }
             }
         }
@@ -378,7 +387,9 @@ constructor(
                 val reports = scenarioReports[scenario] ?: mutableListOf()
                 val summary = reduceTaskReports(reports, arrayListOf("accuracy"), 5.0f)
                 scenarioSummary[scenario] = summary
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                Timber.w(e)
+            }
         }
         return scenarioSummary.toMap()
     }

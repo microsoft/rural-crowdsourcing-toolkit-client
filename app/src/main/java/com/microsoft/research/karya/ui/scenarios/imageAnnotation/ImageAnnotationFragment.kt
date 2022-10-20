@@ -29,6 +29,7 @@ import com.microsoft.research.karya.utils.spotlight.TargetData
 import com.takusemba.spotlight.shape.Circle
 import com.takusemba.spotlight.shape.RoundedRectangle
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -70,6 +71,7 @@ class ImageAnnotationFragment : BaseMTRendererFragment(R.layout.microtask_image_
         val instruction = try {
             viewModel.task.params.asJsonObject.get("instruction").asString
         } catch (e: Exception) {
+            Timber.e(e, "No task instructions were found")
             getString(R.string.image_annotation_instruction)
         }
         with(binding) {
@@ -82,6 +84,7 @@ class ImageAnnotationFragment : BaseMTRendererFragment(R.layout.microtask_image_
             labels = try {
                 viewModel.task.params.asJsonObject.get("labels").asJsonArray.map { it.asString }
             } catch (e: Exception) {
+                Timber.e(e, "No labels for image annotation were found")
                 arrayListOf()
             }
             // Create label detail array // TODO: It is throwing ArrayIndexOutOfBounds (colors is always of size 4 but labels not)

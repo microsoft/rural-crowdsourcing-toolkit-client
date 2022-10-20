@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.microsoft.research.karya.R
 import com.microsoft.research.karya.data.manager.AuthManager
@@ -26,6 +25,7 @@ import kotlinx.coroutines.flow.collect
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import timber.log.Timber
 import java.io.File
 import java.lang.Error
 
@@ -61,6 +61,7 @@ class DashboardSyncWorker(
             syncWithServer()
             Result.success(Data.Builder().putString("warningMsg", warningMsg).build())
         } catch (e: Exception) {
+            Timber.e(e)
             Result.failure(Data.Builder().putString("errorMsg", e.message).build())
         }
     }
@@ -71,14 +72,14 @@ class DashboardSyncWorker(
             val worker = authManager.getLoggedInWorker()
             assignmentRepository.updateExpired(worker.id)
         } catch (e: Exception) {
-            FirebaseCrashlytics.getInstance().recordException(e)
+            Timber.e(e)
         }
 
         // Upload all files
         try {
             uploadOutputFiles()
         } catch (e: Exception) {
-            FirebaseCrashlytics.getInstance().recordException(e)
+            Timber.e(e)
             throw Exception(applicationContext.getString(R.string.upload_file_error))
         }
         setProgressAsync(Data.Builder().putInt("progress", MAX_UPLOAD_PROGRESS).build())
@@ -87,7 +88,7 @@ class DashboardSyncWorker(
         try {
             sendDbUpdates()
         } catch (e: Exception) {
-            FirebaseCrashlytics.getInstance().recordException(e)
+            Timber.e(e)
             throw Exception(applicationContext.getString(R.string.send_db_error))
         }
         setProgressAsync(Data.Builder().putInt("progress", MAX_SEND_DB_UPDATES_PROGRESS).build())
@@ -96,7 +97,7 @@ class DashboardSyncWorker(
         try {
             receiveDbUpdates()
         } catch (e: Exception) {
-            FirebaseCrashlytics.getInstance().recordException(e)
+            Timber.e(e)
             throw Exception(applicationContext.getString(R.string.receive_db_error))
         }
         setProgressAsync(Data.Builder().putInt("progress", MAX_RECEIVE_DB_UPDATES_PROGRESS).build())
@@ -105,7 +106,7 @@ class DashboardSyncWorker(
         try {
             downloadInputFiles()
         } catch (e: Exception) {
-            FirebaseCrashlytics.getInstance().recordException(e)
+            Timber.e(e)
             throw Exception(applicationContext.getString(R.string.download_file_error))
         }
         setProgressAsync(Data.Builder().putInt("progress", MAX_DOWNLOAD_PROGRESS).build())
@@ -114,7 +115,7 @@ class DashboardSyncWorker(
         try {
             fetchVerifiedAssignments()
         } catch (e: Exception) {
-            FirebaseCrashlytics.getInstance().recordException(e)
+            Timber.e(e)
             throw Exception(applicationContext.getString(R.string.received_verified_error))
         }
         setProgressAsync(Data.Builder().putInt("progress", MAX_FETCH_VERIFIED_PROGRESS).build())
@@ -224,7 +225,7 @@ class DashboardSyncWorker(
         try {
             paymentRepository.refreshWorkerEarnings(worker.idToken).collect()
         } catch (e: Error) {
-            FirebaseCrashlytics.getInstance().recordException(e)
+            Timber.e(e)
             warningMsg = "Cannot update payment information"
         }
         // Get Leaderboard data

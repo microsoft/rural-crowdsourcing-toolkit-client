@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -56,7 +57,8 @@ constructor(
             val paymentAccountRequest = PaymentAccountRequest(account = account, name = name, type = "vpa")
             paymentRepository
                 .addAccount(idToken, paymentAccountRequest)
-                .catch {
+                .catch { throwable ->
+                    Timber.e(throwable)
                     _uiStateFlow.update { it.copy(isLoading = false, errorMessage = "Some error occurRed") }
                     _navigationFlow.emit(PaymentDetailNavigation.FAILURE)
                 }

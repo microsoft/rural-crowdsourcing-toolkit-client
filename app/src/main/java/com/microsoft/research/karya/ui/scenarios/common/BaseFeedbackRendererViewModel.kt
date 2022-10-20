@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import timber.log.Timber
 import java.io.File
 import kotlin.properties.Delegates
 
@@ -120,6 +121,7 @@ constructor(
                 outputFilesDict.keySet().forEach { k -> outputFiles.add(outputFilesDict.get(k).asString) }
                 outputFiles
             } catch (e: Exception) {
+                Timber.w(e)
                 arrayListOf<String>()
             }
         assignmentOutputFiles.forEach {

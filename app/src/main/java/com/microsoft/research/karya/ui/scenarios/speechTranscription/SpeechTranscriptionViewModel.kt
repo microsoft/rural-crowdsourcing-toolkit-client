@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -117,6 +118,7 @@ constructor(
             // Set andexo player recording file if valid file
             _recordingFilePath.value = recordingFile
         } catch (e: Exception) {
+            Timber.w(e)
             showErrorWithDialogBox("Corrupt audio file")
             handleCorruptAudio()
             return
@@ -132,6 +134,7 @@ constructor(
                 true
             }
         } catch (e: Exception) {
+            Timber.w(e)
             true
         }
 
@@ -143,6 +146,7 @@ constructor(
                 ""
             }
         } catch (e: Exception) {
+            Timber.w(e)
             ""
         }
 
@@ -157,6 +161,7 @@ constructor(
             val outputTranscript = try {
                 currentAssignment.output.asJsonObject.get("data").asJsonObject.get("transcription").asString
             } catch (e: Exception) {
+                Timber.w(e)
                 ""
             }
             _transcriptionText.value = outputTranscript

@@ -18,6 +18,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -63,12 +64,14 @@ constructor(
                 currentMicroTask.input.asJsonObject.getAsJsonObject("files").get("image").asString
             microtaskInputContainer.getMicrotaskInputFilePath(currentMicroTask.id, imageFileName)
         } catch (e: Exception) {
+            Timber.w(e, "Error fetching file names from input")
             ""
         }
         // Get image annotation type
         val annotationTypeString = try {
             currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("annotationType").asString
         } catch (e: Exception) {
+            Timber.w(e, "No annotationType found")
             "RECTANGLE"
         }
 
@@ -79,6 +82,7 @@ constructor(
         numberOfSides = try {
             currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("numberOfSides").asInt
         } catch (e: Exception) {
+            Timber.w(e)
             // Since default shape is rectangle
             4
         }
@@ -133,6 +137,7 @@ constructor(
         val annotations = try {
             currentMicroTask.input.asJsonObject.getAsJsonObject("data").getAsJsonObject("annotations")
         } catch (e: Exception) {
+            Timber.w(e)
             JsonObject()
         }
 

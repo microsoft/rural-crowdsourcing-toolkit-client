@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -84,6 +85,7 @@ constructor(
                     handleNavigation()
                 }
                 .catch { throwable ->
+                    Timber.e(throwable)
                     _profileUiState.value = ProfileUiState.Error(throwable)
                 }
                 .collect()

@@ -9,6 +9,7 @@ import com.microsoft.research.karya.data.repo.WorkerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,7 +50,10 @@ constructor(
             workerRepository
                 .resendOTP(accessCode = worker.accessCode, phoneNumber = worker.phoneNumber)
                 .onEach { _otpUiState.value = OTPUiState.Initial }
-                .catch { throwable -> _otpUiState.value = OTPUiState.Error(throwable) }
+                .catch { throwable ->
+                    Timber.e(throwable)
+                    _otpUiState.value = OTPUiState.Error(throwable)
+                }
                 .collect()
         }
     }
@@ -73,7 +77,10 @@ constructor(
                         _otpEffects.emit(OTPEffects.NavigateToProfile)
                     }
                 }
-                .catch { throwable -> _otpUiState.value = OTPUiState.Error(throwable) }
+                .catch { throwable ->
+                    Timber.e(throwable)
+                    _otpUiState.value = OTPUiState.Error(throwable)
+                }
                 .collect()
         }
     }
