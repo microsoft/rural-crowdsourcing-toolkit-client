@@ -78,6 +78,7 @@ tasks {
 /**
  * registers installGitHooks task to run before build, this
  * way whenever a new clone is made, the first build copies
- * pre-commit script to .git/hooks
+ * pre-commit and commit-msg scripts to .git/hooks
  */
-tasks.getByPath(":app:preBuild").dependsOn(":installGitHook")
+tasks.getByPath(":app:preBuild").dependsOn(":installPreCommit")
+tasks.getByPath(":app:preBuild").dependsOn(":installCommitMessage")

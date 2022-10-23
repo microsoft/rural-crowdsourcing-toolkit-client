@@ -1,0 +1,16 @@
+#!/bin/bash
+
+regex='^(feat|fix|docs|style|refactor|test|build|ci|perf)(\(.+\))?\:\s(.{3,70})'
+red='\033[0;31m'
+
+echo "Checking commit message format"
+# .gitmessage
+if ! grep -iqE "$regex" "$1"; then
+    echo -e "$red Your commit message does not follow the guideline"
+    echo -e "$red See the guideline: .gitmessage"
+    echo -e "$red Run: cat './.gitmessage'"
+    echo -e "$red COMMIT FAILED: INVALID COMMIT MESSAGE"
+    exit 1
+else
+    echo "VALID COMMIT MESSAGE"
+fi

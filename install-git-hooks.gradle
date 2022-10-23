@@ -4,8 +4,14 @@
  *  executable permission we need to give file-mode 0777
  *  For permissions 0777 != 777; see https://unix.stackexchange.com/a/103414
  */
-task installGitHook(type: Copy) {
+task installPreCommit(type: Copy) {
     from new File(rootProject.rootDir, 'tools/pre-commit')
+    into { new File(rootProject.rootDir, '.git/hooks') }
+    fileMode 0777
+}
+
+task installCommitMessage(type: Copy) {
+    from new File(rootProject.rootDir, 'tools/commit-msg')
     into { new File(rootProject.rootDir, '.git/hooks') }
     fileMode 0777
 }
