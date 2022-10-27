@@ -2,25 +2,28 @@ package com.microsoft.research.karya.ui.homeScreen
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.microsoft.research.karya.BuildConfig
-import com.microsoft.research.karya.R
 import com.microsoft.research.karya.compose.theme.KaryaTheme
-import com.microsoft.research.karya.databinding.FragmentHomeScreenBinding
 import com.microsoft.research.karya.ui.base.BaseFragment
 import com.microsoft.research.karya.utils.extensions.observe
-import com.microsoft.research.karya.utils.extensions.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeScreenFragment : BaseFragment(R.layout.fragment_home_screen) {
+class HomeScreenFragment : BaseFragment() {
 
-    private val binding by viewBinding(FragmentHomeScreenBinding::bind)
     private val viewModel by viewModels<HomeScreenViewModel>()
+    private lateinit var composeView: ComposeView
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return ComposeView(requireContext()).apply { composeView = this }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -29,7 +32,7 @@ class HomeScreenFragment : BaseFragment(R.layout.fragment_home_screen) {
     }
 
     private fun setupComposable() {
-        binding.composeView.setContent {
+        composeView.setContent {
             KaryaTheme {
                 HomeScreen(viewModel, findNavController())
             }

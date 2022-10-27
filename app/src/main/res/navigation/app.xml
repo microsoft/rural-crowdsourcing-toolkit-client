@@ -112,8 +112,7 @@
     <fragment
         android:id="@+id/homeScreenFragment"
         android:name="com.microsoft.research.karya.ui.homeScreen.HomeScreenFragment"
-        android:label="fragment_home_screen"
-        tools:layout="@layout/fragment_home_screen">
+        android:label="fragment_home_screen">
         <action
             android:id="@+id/action_homeScreen_to_profile"
             app:destination="@id/profileFragment" />
