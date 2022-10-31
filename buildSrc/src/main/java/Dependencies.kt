@@ -115,7 +115,7 @@ object Dependencies {
     const val toggleButtonGroup = "nl.bryanderidder:themed-toggle-button-group:1.3.4"
     const val flowLayout = "com.nex3z:flow-layout:1.3.4-beta01"
     const val volley = "com.mcxiaoke.volley:library:1.0.19" // why this one? This is Deprecated
-    const val magicalExoPlayer = "com.github.HamidrezaAmz:MagicalExoPlayer:2.0.6"
+    const val magicalExoPlayer = "com.github.HamidrezaAmz:MagicalExoPlayer:3.0.5"
     const val videoCompressor = "com.github.fishwjy:VideoCompressor:master-SNAPSHOT"
 
     object Retrofit {
