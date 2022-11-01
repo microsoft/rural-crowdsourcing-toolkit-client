@@ -18,8 +18,10 @@ object Plugins {
   const val safeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:$NAVIGATION_VERSION"
 }
 
-// TODO: Rename to Plugins once root build.gradle is migrated from using classpath to plugins
 sealed class Plugin(val id: String, val version: String) {
+  object KotlinAndroid : Plugin("org.jetbrains.kotlin.android", "1.7.20")
+  object AndroidApplication: Plugin("com.android.application", "7.3.1")
+  object AndroidLibrary: Plugin("com.android.library", "7.3.1")
   object Hilt : Plugin("com.google.dagger.hilt.android", HILT_VERSION)
   object KtLint : Plugin("org.jlleitschuh.gradle.ktlint", KT_LINT_VERSION)
 }
