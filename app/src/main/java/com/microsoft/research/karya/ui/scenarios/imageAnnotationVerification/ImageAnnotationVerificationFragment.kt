@@ -21,6 +21,7 @@ import com.microsoft.research.karya.utils.extensions.observe
 import com.microsoft.research.karya.utils.extensions.viewBinding
 import com.microsoft.research.karya.utils.extensions.viewLifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class ImageAnnotationVerificationFragment : BaseMTRendererFragment(R.layout.microtask_image_annotation_verification_fragment) {
@@ -49,6 +50,7 @@ class ImageAnnotationVerificationFragment : BaseMTRendererFragment(R.layout.micr
         val instruction = try {
             viewModel.task.params.asJsonObject.get("instruction").asString
         } catch (e: Exception) {
+            Timber.e(e, "No task instructions were found")
             getString(R.string.image_annotation_instruction)
         }
         with(binding) {

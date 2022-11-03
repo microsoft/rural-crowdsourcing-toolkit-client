@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 class PaymentRepository
@@ -33,6 +34,7 @@ constructor(
             val ifsc = try {
                 paymentInfoResponse.meta!!.account.ifsc!!
             } catch (e: Exception) {
+                Timber.e(e)
                 ""
             }
 

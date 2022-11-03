@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import timber.log.Timber
 import java.io.DataOutputStream
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -209,6 +210,7 @@ constructor(
         compressAudio = try {
             task.params.asJsonObject.get("compress").asBoolean
         } catch (e: Exception) {
+            Timber.w(e)
             false
         }
 
@@ -221,6 +223,7 @@ constructor(
                 else -> 44100
             }
         } catch (e: Exception) {
+            Timber.w(e)
             44100
         }
 
@@ -232,6 +235,7 @@ constructor(
                 else -> AudioFormat.ENCODING_PCM_16BIT
             }
         } catch (e: Exception) {
+            Timber.w(e)
             AudioFormat.ENCODING_PCM_16BIT
         }
 
@@ -288,6 +292,7 @@ constructor(
         allowSkipping = try {
             task.params.asJsonObject.get("allowSkipping").asBoolean
         } catch (e: Exception) {
+            Timber.w(e)
             false
         }
 
@@ -1095,6 +1100,7 @@ constructor(
                     val readBytes = try {
                         audioRecorder!!.read(currentBuffer, consumedBytes, remainingBytes)
                     } catch (e: Exception) {
+                        Timber.w(e)
                         break
                     }
 
@@ -1132,6 +1138,7 @@ constructor(
                     try {
                         readBytes = audioRecorder!!.read(data, currentRecordBufferConsumed, remainingSpace)
                     } catch (e: Exception) {
+                        Timber.w(e)
                         // Exception likely caused by recording job getting cancelled
                         break
                     }
@@ -1208,6 +1215,7 @@ constructor(
                             totalRecordedBytes += currentRecordBufferConsumed
                         }
                     } catch (e: Exception) {
+                        Timber.w(e)
                         // Ignore (rare) errors
                     }
 

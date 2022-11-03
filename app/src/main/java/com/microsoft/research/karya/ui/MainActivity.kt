@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity() {
                 val languageCode = worker.language
                 setActivityLocale(languageCode)
             } catch (e: Throwable) {
+                Timber.w(e)
                 // No logged in worker. Ignore
             }
         }

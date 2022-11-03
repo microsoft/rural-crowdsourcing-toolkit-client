@@ -9,6 +9,7 @@ import com.microsoft.research.karya.data.repo.WorkerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,6 +40,7 @@ constructor(
                 _accessCodeEffects.emit(AccessCodeEffects.Navigate)
             }
             .catch { exception ->
+                Timber.e(exception)
                 _accessCodeUiState.value = AccessCodeUiState.Error(exception)
             }
             .launchIn(viewModelScope)

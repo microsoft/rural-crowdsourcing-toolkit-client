@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -60,6 +61,7 @@ constructor(
         limit = try {
             currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("limit").asInt
         } catch (e: Exception) {
+            Timber.w(e)
             999999
         }
 

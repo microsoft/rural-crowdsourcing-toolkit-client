@@ -17,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -122,6 +123,7 @@ constructor(
         _rateOnlyAccuracy.value = try {
             task.params.asJsonObject.get("onlyAccuracy").asBoolean
         } catch (e: Exception) {
+            Timber.w(e)
             false
         }
 
@@ -155,6 +157,7 @@ constructor(
 
             setActivityState(ActivityState.WAIT_FOR_PLAY)
         } catch (exception: Exception) {
+            Timber.w(exception)
             // Alert dialog
             showErrorWithDialogBox("Audio file is corrupt")
         }
@@ -370,6 +373,7 @@ constructor(
                     try {
                         mediaPlayer?.currentPosition
                     } catch (e: Exception) {
+                        Timber.w(e)
                         null
                     }
                 _playbackProgress.value = currentPosition ?: _playbackProgress.value

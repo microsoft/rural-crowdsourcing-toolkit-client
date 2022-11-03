@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 import java.util.*
 
@@ -324,6 +325,7 @@ abstract class BaseMTRendererViewModel(
                     null
                 }
             } catch (e: Exception) {
+                Timber.e(e)
                 null
             }
 

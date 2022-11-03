@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -56,6 +57,7 @@ constructor(
                 val imageFileName = currentMicroTask.input.asJsonObject.getAsJsonObject("files").get("image").asString
                 microtaskInputContainer.getMicrotaskInputFilePath(currentMicroTask.id, imageFileName)
             } catch (e: Exception) {
+                Timber.w(e)
                 ""
             }
     }

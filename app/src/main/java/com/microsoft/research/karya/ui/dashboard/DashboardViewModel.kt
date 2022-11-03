@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.*
@@ -70,6 +71,7 @@ constructor(
                     }
                 }
             } catch (e: Exception) {
+                Timber.w(e)
                 _workFromCenterUser.value = false
             }
         }
@@ -150,9 +152,12 @@ constructor(
 
                     val tempList = mutableListOf<TaskInfo>()
                     taskList.forEach { taskRecord ->
+                        // TODO: Here only NPE are expected in the case when the key do not exist
+                        //      in the JSON object so can be simply "?.asString ?: null", can't be?
                         val taskInstruction = try {
                             taskRecord.params.asJsonObject.get("instruction").asString
                         } catch (e: Exception) {
+                            Timber.e(e)
                             null
                         }
                         val taskId = taskRecord.id
@@ -179,7 +184,10 @@ constructor(
                         )
                     _dashboardUiState.value = success
                 }
-                .catch { _dashboardUiState.value = DashboardUiState.Error(it) }
+                .catch {
+                    Timber.w(it)
+                    _dashboardUiState.value = DashboardUiState.Error(it)
+                }
                 .collect()
         }
     }

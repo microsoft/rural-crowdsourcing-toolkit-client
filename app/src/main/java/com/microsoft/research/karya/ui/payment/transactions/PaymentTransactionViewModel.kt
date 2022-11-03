@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -37,7 +38,10 @@ constructor(private val authManager: AuthManager, private val paymentRepository:
 
             paymentRepository
                 .getTransactions(idToken, worker.id)
-                .catch { _uiStateFlow.update { it.copy(isLoading = false, errorMessage = "Error fetching transactions") } }
+                .catch { throwable ->
+                    Timber.e(throwable)
+                    _uiStateFlow.update { it.copy(isLoading = false, errorMessage = "Error fetching transactions") }
+                }
                 .collect { list ->
                     val transactionList =
                         list.map { transaction ->

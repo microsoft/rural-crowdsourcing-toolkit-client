@@ -20,6 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -82,18 +83,21 @@ constructor(
             try {
                 task.params.asJsonObject.get("allowValidation").asBoolean
             } catch (e: Exception) {
+                Timber.w(e)
                 false
             }
         mlFeedback =
             try {
                 task.params.asJsonObject.get("mlFeedback").asBoolean
             } catch (e: Exception) {
+                Timber.w(e)
                 false
             }
         variantLimitTask =
             try {
                 task.params.asJsonObject.get("limit").asInt
             } catch (e: Exception) {
+                Timber.w(e)
                 2
             }
     }
@@ -108,6 +112,7 @@ constructor(
             try {
                 currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("limit").asInt
             } catch (e: Exception) {
+                Timber.w(e)
                 variantLimitTask
             }
 
@@ -115,6 +120,7 @@ constructor(
             try {
                 currentMicroTask.input.asJsonObject.getAsJsonObject("data").get("variants").asJsonObject
             } catch (e: Exception) {
+                Timber.w(e)
                 JsonObject()
             }
         val temp = mutableMapOf<String, WordDetail>()

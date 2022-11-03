@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 enum class AUTH_STATUS {
@@ -75,6 +76,7 @@ constructor(
                 setAuthStatus(AUTH_STATUS.LOGGED_IN)
             }
         } catch (e: NoWorkerException) {
+            Timber.w(e)
             setAuthStatus(AUTH_STATUS.LOGGED_OUT)
         }
     }
