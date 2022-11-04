@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,11 +25,12 @@ fun KaryaAppBar(
     title: String,
     versionCode: String,
     onBackPressed: () -> Unit,
-    languageCode: String, // TODO: use an enum or sealed class for language codes
-    onLanguageCodeClicked: (String) -> Unit,
+    languageCode: String,
+    onLanguageCodeClicked: () -> Unit,
     isNavigationEnable: Boolean = false,
 ) {
     TopAppBar(
+        modifier = Modifier.shadow(4.dp),
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
@@ -54,8 +56,12 @@ fun KaryaAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { onLanguageCodeClicked(languageCode) }) {
-                Text(text = languageCode, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+            IconButton(onClick = { onLanguageCodeClicked() }) {
+                Text(
+                    text = languageCode,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
             IconButton(onClick = { }) { Text(text = versionCode) }
         }

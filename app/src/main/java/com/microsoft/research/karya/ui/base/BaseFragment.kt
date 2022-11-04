@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.annotation.LayoutRes
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.microsoft.research.karya.R
 import com.microsoft.research.karya.data.exceptions.KaryaException
@@ -60,6 +62,34 @@ abstract class BaseFragment : Fragment {
         return when (throwable) {
             is KaryaException -> throwable.getMessage(context)
             else -> throwable.message ?: context.getString(R.string.unknown_error)
+        }
+    }
+
+    fun showLanguageUpdater() {
+        val languageDialog = Toolbar.inflate(requireContext(), R.layout.dialog_update_language, null)
+        val dialogBuilder = android.app.AlertDialog.Builder(requireContext())
+        dialogBuilder.setView(languageDialog)
+        val dialog = dialogBuilder.create()
+        dialog.show()
+
+        languageDialog.findViewById<Button>(R.id.languageEnglish).setOnClickListener {
+            updateUserLanguage(LanguageType.EN)
+            dialog.cancel()
+        }
+
+        languageDialog.findViewById<Button>(R.id.languageHindi).setOnClickListener {
+            updateUserLanguage(LanguageType.HI)
+            dialog.cancel()
+        }
+
+        languageDialog.findViewById<Button>(R.id.languageMarathi).setOnClickListener {
+            updateUserLanguage(LanguageType.MR)
+            dialog.cancel()
+        }
+
+        languageDialog.findViewById<Button>(R.id.languageUrdu).setOnClickListener {
+            updateUserLanguage(LanguageType.UR)
+            dialog.cancel()
         }
     }
 

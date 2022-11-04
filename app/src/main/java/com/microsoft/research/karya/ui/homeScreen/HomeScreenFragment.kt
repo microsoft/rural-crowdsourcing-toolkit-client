@@ -34,7 +34,8 @@ class HomeScreenFragment : BaseFragment() {
     private fun setupComposable() {
         composeView.setContent {
             KaryaTheme {
-                HomeScreen(viewModel, findNavController())
+                // TODO: Get language code and pass
+                HomeScreen(viewModel, findNavController(), "EN") { showLanguageUpdater() }
             }
         }
     }

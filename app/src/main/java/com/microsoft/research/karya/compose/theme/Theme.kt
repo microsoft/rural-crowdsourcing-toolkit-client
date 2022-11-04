@@ -75,6 +75,7 @@ fun KaryaTheme(
 
     MaterialTheme(
         colorScheme = colors,
-        content = content
+        content = content,
+        typography = karyaTypography
     )
 }
