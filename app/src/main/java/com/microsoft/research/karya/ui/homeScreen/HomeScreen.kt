@@ -23,6 +23,11 @@ import com.microsoft.research.karya.R
 import com.microsoft.research.karya.compose.components.HorizontalSpacer
 import com.microsoft.research.karya.compose.components.v1.KaryaAppBar
 import com.microsoft.research.karya.compose.theme.sdp
+import com.microsoft.research.karya.ui.homeScreen.components.Earning
+import com.microsoft.research.karya.ui.homeScreen.components.HomeScreenCard
+import com.microsoft.research.karya.ui.homeScreen.components.PerformanceCard
+import com.microsoft.research.karya.ui.homeScreen.components.ProfileCard
+import com.microsoft.research.karya.ui.homeScreen.components.TaskSummaryCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,7 +94,7 @@ fun HomeScreen(
             HorizontalSpacer()
 
             /** Summary Card */
-            TaskSummary(taskSummary) {
+            TaskSummaryCard(taskSummary) {
                 val action = HomeScreenFragmentDirections.actionHomeScreenToDashboard()
                 navController.navigate(action)
             }

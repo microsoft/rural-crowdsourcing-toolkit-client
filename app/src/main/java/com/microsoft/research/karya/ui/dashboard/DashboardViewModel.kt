@@ -43,8 +43,16 @@ constructor(
         MutableStateFlow(DashboardUiState.Success(DashboardStateSuccess(emptyList())))
     val dashboardUiState = _dashboardUiState.asStateFlow()
 
+    private val _taskList: MutableStateFlow<List<TaskInfo>> = MutableStateFlow(listOf())
+    val taskList = _taskList.asStateFlow()
+
     private val _progress: MutableStateFlow<Int> = MutableStateFlow(0)
     val progress = _progress.asStateFlow()
+    private var _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
+    private val _error: MutableStateFlow<DashboardError?> = MutableStateFlow(null)
+    val error = _error.asStateFlow()
 
     private val _workerAccessCode: MutableStateFlow<String> = MutableStateFlow("")
     val workerAccessCode = _workerAccessCode.asStateFlow()
@@ -131,6 +139,7 @@ constructor(
                 DashboardStateSuccess(taskInfoList.sortedWith(taskInfoComparator))
             )
         _dashboardUiState.value = success
+        _taskList.value = taskInfoList.sortedWith(taskInfoComparator)
     }
 
     /**
@@ -183,10 +192,12 @@ constructor(
                             DashboardStateSuccess(taskInfoList.sortedWith(taskInfoComparator))
                         )
                     _dashboardUiState.value = success
+                    _taskList.value = taskInfoList.sortedWith(taskInfoComparator)
                 }
                 .catch {
                     Timber.w(it)
                     _dashboardUiState.value = DashboardUiState.Error(it)
+                    _error.value = DashboardError(it.message ?: "Some error occured", ERROR_LVL.ERROR, ERROR_TYPE.TASK_ERROR)
                 }
                 .collect()
         }
@@ -194,6 +205,7 @@ constructor(
 
     fun setLoading() {
         _dashboardUiState.value = DashboardUiState.Loading
+        _isLoading.value = true
     }
 
     private suspend fun fetchTaskStatus(taskId: String): TaskStatus {
@@ -203,4 +215,10 @@ constructor(
     fun setProgress(i: Int) {
         _progress.value = i
     }
+
+    fun setError(error: DashboardError) {
+        _error.value = error
+    }
 }
+
+class DashboardError(val errorMessage: String, val errorLevel: ERROR_LVL, val errorType: ERROR_TYPE)
