@@ -45,19 +45,21 @@ fun LeaderboardScreen(
                 onBackPressed = onNavigateBack,
                 languageCode = languageCode, // TODO: Update
                 onLanguageCodeClicked = onLanguageClicked,
+                isNavigationEnable = true
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp),
             contentAlignment = Alignment.Center
         ) {
             if (leaderboardList.isEmpty()) {
                 Text(
                     text = stringResource(id = R.string.leaderboard_empty),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.error,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -68,7 +70,8 @@ fun LeaderboardScreen(
                         .padding(8.dp)
                 )
             } else {
-                LazyColumn(Modifier.padding(horizontal = 16.dp)) {
+                LazyColumn {
+                    item { HorizontalSpacer() }
                     items(leaderboardList) { item ->
                         LeaderboardItem(leaderboardRecord = item)
                         HorizontalSpacer()
