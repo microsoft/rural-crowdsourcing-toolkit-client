@@ -4,27 +4,29 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import androidx.core.content.edit
-import androidx.datastore.dataStore
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.*
 import com.microsoft.research.karya.BuildConfig
 import com.microsoft.research.karya.R
+import com.microsoft.research.karya.compose.theme.KaryaTheme
 import com.microsoft.research.karya.data.model.karya.enums.ScenarioType
 import com.microsoft.research.karya.data.model.karya.modelsExtra.TaskInfo
-import com.microsoft.research.karya.databinding.FragmentDashboardBinding
 import com.microsoft.research.karya.ui.base.SessionFragment
+import com.microsoft.research.karya.ui.dashboard.components.DashboardScreen
 import com.microsoft.research.karya.utils.PreferenceKeys
-import com.microsoft.research.karya.utils.extensions.*
+import com.microsoft.research.karya.utils.extensions.dataStore
+import com.microsoft.research.karya.utils.extensions.isNetworkAvailable
+import com.microsoft.research.karya.utils.extensions.observe
+import com.microsoft.research.karya.utils.extensions.viewLifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -42,9 +44,8 @@ enum class ERROR_LVL {
 }
 
 @AndroidEntryPoint
-class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
+class DashboardFragment : SessionFragment() {
 
-    val binding by viewBinding(FragmentDashboardBinding::bind)
     val viewModel: DashboardViewModel by viewModels()
     private lateinit var syncWorkRequest: OneTimeWorkRequest
 
@@ -52,9 +53,24 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
 
     private lateinit var sharedPrefs: SharedPreferences
 
+    private lateinit var composeView: ComposeView
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = ComposeView(requireContext()).apply { composeView = this }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sharedPrefs = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        composeView.setContent {
+            KaryaTheme {
+                DashboardScreen(
+                    viewModel = viewModel,
+                    onSyncClicked = { syncWithServer() },
+                    onBackPressed = { findNavController().popBackStack() },
+                    languageCode = "EN",
+                    onLanguageClicked = { },
+                    onTaskItemClicked = { onDashboardItemClick(it) }
+                )
+            }
+        }
         setupViews()
         setupWorkRequests()
         observeUi()
@@ -75,37 +91,6 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
             }
         }
 
-        viewModel.workerAccessCode.observe(viewLifecycleOwner.lifecycle, lifecycleScope) { code ->
-            binding.accessCodeTv.text = code
-        }
-
-        // Work for center user
-        viewModel.workFromCenterUser.observe(viewLifecycleOwner.lifecycle, lifecycleScope) { wfc ->
-            if (wfc) {
-                if (!viewModel.userInCenter.value) {
-                    binding.wfcEnterCodeLL.visible()
-                    binding.revokeWFCAuthorizationBtn.gone()
-                } else {
-                    binding.wfcEnterCodeLL.gone()
-                    binding.revokeWFCAuthorizationBtn.visible()
-                }
-            }
-        }
-
-        viewModel.userInCenter.observe(viewLifecycleOwner.lifecycle, lifecycleScope) { uIC ->
-            if (viewModel.workFromCenterUser.value) {
-                if (!uIC) {
-                    binding.wfcEnterCodeLL.visible()
-                    binding.revokeWFCAuthorizationBtn.gone()
-                } else {
-                    binding.wfcEnterCodeLL.gone()
-                    binding.revokeWFCAuthorizationBtn.visible()
-                }
-            }
-        }
-
-        viewModel.progress.observe(lifecycle, lifecycleScope) { i -> binding.syncProgressBar.progress = i }
-
         WorkManager.getInstance(requireContext())
             .getWorkInfosForUniqueWorkLiveData(UNIQUE_SYNC_WORK_NAME)
             .observe(viewLifecycleOwner) { workInfos ->
@@ -123,13 +108,13 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
                 }
                 if (workInfo != null && workInfo.state == WorkInfo.State.ENQUEUED) {
                     viewModel.setProgress(0)
-                    viewModel.setLoading()
+                    viewModel.setIsLoading(true)
                 }
                 if (workInfo != null && workInfo.state == WorkInfo.State.RUNNING) {
                     // Check if the current work's state is "successfully finished"
                     val progress: Int = workInfo.progress.getInt("progress", 0)
                     viewModel.setProgress(progress)
-                    viewModel.setLoading()
+                    viewModel.setIsLoading(true)
                     // refresh the UI to show microtasks
                     if (progress == 100)
                         viewLifecycleScope.launch {
@@ -171,30 +156,13 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
     }
 
     private fun setupViews() {
-        binding.appTb.setBackBtnClickListener {
-            findNavController().popBackStack()
-        }
+        // TODO: See it again
+//            binding.revokeWFCAuthorizationBtn.setOnClickListener {
+//                viewModel.revokeWFCAuthorization()
+//                binding.centerCode.text.clear()
+//            }
 
-        with(binding) {
-            tasksRv.apply {
-                adapter = TaskListAdapter(emptyList(), ::onDashboardItemClick)
-                layoutManager = LinearLayoutManager(context)
-            }
-
-            binding.syncCv.setOnClickListener { syncWithServer() }
-
-            binding.submitCenterCodeBtn.setOnClickListener {
-                viewModel.authorizeWorkFromCenterUser(binding.centerCode.text.toString())
-                binding.centerCode.text.clear()
-            }
-
-            binding.revokeWFCAuthorizationBtn.setOnClickListener {
-                viewModel.revokeWFCAuthorization()
-                binding.centerCode.text.clear()
-            }
-
-            loadProfilePic()
-        }
+        loadProfilePic()
     }
 
     private fun syncWithServer() {
@@ -206,18 +174,14 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
     private suspend fun showSuccessUi(data: DashboardStateSuccess) {
         WorkManager.getInstance(requireContext()).getWorkInfoByIdLiveData(syncWorkRequest.id)
             .observe(
-                viewLifecycleOwner,
-                Observer { workInfo ->
-                    if (workInfo == null || workInfo.state == WorkInfo.State.SUCCEEDED || workInfo.state == WorkInfo.State.FAILED) {
-                        hideLoading() // Only hide loading if no work is in queue
-                    }
+                viewLifecycleOwner
+            ) { workInfo ->
+                if (workInfo == null || workInfo.state == WorkInfo.State.SUCCEEDED || workInfo.state == WorkInfo.State.FAILED) {
+                    viewModel.setIsLoading(false) // Only hide loading if no work is in queue
                 }
-            )
+            }
 
-        binding.syncCv.enable()
-        data.apply {
-            (binding.tasksRv.adapter as TaskListAdapter).updateList(taskInfoData)
-        }
+        viewModel.setSyncStatus(true)
 
         // Check if worker is initialised in viewmodel
         if (viewModel.workerAccessCode.value.isNotEmpty()) {
@@ -280,38 +244,27 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
     }
 
     private fun showErrorUi(throwable: Throwable, errorType: ERROR_TYPE, errorLvl: ERROR_LVL) {
-        hideLoading()
+        viewModel.setIsLoading(false)
         showError(throwable.message ?: "Some error Occurred", errorType, errorLvl)
-        binding.syncCv.enable()
+        viewModel.setSyncStatus(true)
     }
 
     private fun showError(message: String, errorType: ERROR_TYPE, errorLvl: ERROR_LVL) {
         if (errorType == ERROR_TYPE.SYNC_ERROR) {
             WorkManager.getInstance(requireContext()).cancelAllWork()
-            with(binding) {
-                syncErrorMessageTv.text = message
-
-                when (errorLvl) {
-                    ERROR_LVL.ERROR -> syncErrorMessageTv.setTextColor(Color.RED)
-                    ERROR_LVL.WARNING -> syncErrorMessageTv.setTextColor(Color.YELLOW)
-                }
-                syncErrorMessageTv.visible()
-            }
+            viewModel.setError(DashboardError(message, errorLvl, errorType))
         }
     }
 
     private fun showLoadingUi() {
-        showLoading()
-        binding.syncCv.disable()
-        binding.syncErrorMessageTv.gone()
+        viewModel.setIsLoading(true)
+        viewModel.setSyncStatus(false)
+        viewModel.setError(null) // error is hidden for null value
     }
 
-    private fun showLoading() = binding.syncProgressBar.visible()
-
-    private fun hideLoading() = binding.syncProgressBar.gone()
-
     private fun loadProfilePic() {
-        binding.appTb.showProfilePicture()
+        // TODO: Add profile picture
+        // binding.appTb.showProfilePicture()
 
         lifecycleScope.launchWhenStarted {
             withContext(Dispatchers.IO) {
@@ -319,7 +272,9 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
                     authManager.getLoggedInWorker().profilePicturePath ?: return@withContext
                 val bitmap = BitmapFactory.decodeFile(profilePicPath)
 
-                withContext(Dispatchers.Main.immediate) { binding.appTb.setProfilePicture(bitmap) }
+                withContext(Dispatchers.Main.immediate) {
+                    // binding.appTb.setProfilePicture(bitmap) // TODO: Handle profile pic
+                }
             }
         }
     }
@@ -413,7 +368,8 @@ class DashboardFragment : SessionFragment(R.layout.fragment_dashboard) {
                 if (viewModel.workFromCenterUser.value) {
                     viewModel.checkWorkFromCenterUserAuth()
                     if (!viewModel.userInCenter.value) {
-                        binding.centerCode.requestFocus()
+                        // binding.centerCode.requestFocus()
+                        // TODO: handle this
                         return
                     }
                 }

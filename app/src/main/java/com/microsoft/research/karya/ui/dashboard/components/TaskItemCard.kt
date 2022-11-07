@@ -29,17 +29,17 @@ fun TaskItemCard(taskInfo: TaskInfo, onClick: () -> Unit) {
     val assigned = status.assignedMicrotasks
     val skipped = status.skippedMicrotasks
     val expired = status.expiredMicrotasks
-    val progress = (completed / (completed + assigned)).toFloat()
+    val progress = (completed.toFloat() / (completed + assigned).toFloat())
     val title = taskInfo.taskName
     val taskStatus = TaskStatus(assigned, completed, submitted, verified, skipped, expired)
     val report = taskInfo.reportSummary // speech data report, null for others
 
-    val modifier = if (assigned + skipped > 0) Modifier
-        .padding(16.dp)
-        .clickable { onClick() } else Modifier.padding(16.dp)
-
     KaryaCard {
-        Column(modifier) {
+        Column(
+            modifier = Modifier
+                .clickable(enabled = (assigned + skipped > 0), onClick = onClick)
+                .padding(16.dp)
+        ) {
             Text(text = title, style = MaterialTheme.typography.titleLarge)
             HorizontalSpacer()
             KaryaProgressBar(progress = progress)

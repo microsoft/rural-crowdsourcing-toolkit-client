@@ -54,6 +54,9 @@ constructor(
     private val _error: MutableStateFlow<DashboardError?> = MutableStateFlow(null)
     val error = _error.asStateFlow()
 
+    private val _isSyncEnabled: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    val isSyncEnabled = _isSyncEnabled.asStateFlow()
+
     private val _workerAccessCode: MutableStateFlow<String> = MutableStateFlow("")
     val workerAccessCode = _workerAccessCode.asStateFlow()
 
@@ -139,7 +142,9 @@ constructor(
                 DashboardStateSuccess(taskInfoList.sortedWith(taskInfoComparator))
             )
         _dashboardUiState.value = success
+
         _taskList.value = taskInfoList.sortedWith(taskInfoComparator)
+        setIsLoading(false)
     }
 
     /**
@@ -193,19 +198,23 @@ constructor(
                         )
                     _dashboardUiState.value = success
                     _taskList.value = taskInfoList.sortedWith(taskInfoComparator)
+                    setIsLoading(false)
+                    setError(null)
                 }
                 .catch {
                     Timber.w(it)
-                    _dashboardUiState.value = DashboardUiState.Error(it)
-                    _error.value = DashboardError(it.message ?: "Some error occured", ERROR_LVL.ERROR, ERROR_TYPE.TASK_ERROR)
+                    setError(DashboardError(it.message ?: "Some error occured", ERROR_LVL.ERROR, ERROR_TYPE.TASK_ERROR))
                 }
                 .collect()
         }
     }
 
-    fun setLoading() {
-        _dashboardUiState.value = DashboardUiState.Loading
-        _isLoading.value = true
+    fun setIsLoading(isLoading: Boolean) {
+        _isLoading.value = isLoading
+    }
+
+    fun setSyncStatus(isEnabled: Boolean) {
+        _isSyncEnabled.value = isEnabled
     }
 
     private suspend fun fetchTaskStatus(taskId: String): TaskStatus {
@@ -216,7 +225,7 @@ constructor(
         _progress.value = i
     }
 
-    fun setError(error: DashboardError) {
+    fun setError(error: DashboardError?) {
         _error.value = error
     }
 }

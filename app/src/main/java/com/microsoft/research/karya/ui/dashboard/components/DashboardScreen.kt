@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.microsoft.research.karya.BuildConfig
 import com.microsoft.research.karya.R
@@ -37,12 +38,11 @@ fun DashboardScreen(
     onTaskItemClicked: (TaskInfo) -> Unit,
 
 ) {
-
-    val uiState by viewModel.dashboardUiState.collectAsState()
-
     val workFromCenterUser by viewModel.workFromCenterUser.collectAsState()
     val workerAccessCode by viewModel.workerAccessCode.collectAsState()
     val userInCenter by viewModel.userInCenter.collectAsState()
+
+    val isSyncEnabled by viewModel.isSyncEnabled.collectAsState()
 
     val taskList by viewModel.taskList.collectAsState()
 
@@ -77,7 +77,7 @@ fun DashboardScreen(
              */
             AnimatedVisibility(visible = workFromCenterUser) {
                 // Show work from center
-                if (userInCenter) {
+                if (!userInCenter) { // TODO: Invert if
                     // Show enter code
                     var code by remember { mutableStateOf("") }
                     Row(
@@ -91,7 +91,10 @@ fun DashboardScreen(
                             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                             label = { Text(text = "Center Code") }
                         )
-                        Button(onClick = { /** TODO */ }) {
+                        Button(onClick = {
+                            viewModel.authorizeWorkFromCenterUser(code)
+                            code = ""
+                        }) {
                             Icon(
                                 modifier = Modifier.padding(4.dp),
                                 imageVector = Icons.Default.ArrowForward,
@@ -101,7 +104,9 @@ fun DashboardScreen(
                     }
                 } else {
                     // Show revoke authorization
-                    FilledTonalButton(onClick = { /** TODO */ }) {
+                    FilledTonalButton(onClick = {
+                        viewModel.revokeWFCAuthorization()
+                    }) {
                         Text(text = "Revoke Authorization")
                     }
                 }
@@ -110,29 +115,31 @@ fun DashboardScreen(
             /**
              * Worker Access Code
              */
-            Text(text = stringResource(R.string.access_code, workerAccessCode))
+            Text(text = stringResource(R.string.access_code, workerAccessCode), color = MaterialTheme.colorScheme.outline)
 
             /**
              * Sync with server
              */
             HorizontalSpacer()
-            KaryaCard(Modifier.clickable { onSyncClicked() }) {
+            KaryaCard {
                 Column(
                     modifier = Modifier
+                        .clickable(enabled = isSyncEnabled, onClick = onSyncClicked)
                         .padding(16.dp)
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = stringResource(id = R.string.sync_prompt),
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center
                     )
 
                     AnimatedVisibility(
                         visible = isProgressVisible
                     ) {
                         KaryaProgressBar(
-                            (progress / 100).toFloat(),
+                            (progress.toFloat() / 100),
                             modifier = Modifier.padding(top = 16.dp)
                         )
                     }
@@ -143,7 +150,7 @@ fun DashboardScreen(
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
                                 text = it.errorMessage,
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleSmall,
                                 color = if (it.errorLevel == ERROR_LVL.WARNING) Color.Yellow else MaterialTheme.colorScheme.error
                             )
                         }
